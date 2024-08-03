@@ -1,0 +1,40 @@
+.round-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.round-list > div {
+    text-align: center;
+    border: 1px solid cyan;
+    margin: 15px;
+    width: 200px;
+}
+
+.round-list > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 200px;
+}
+
+.round-list > div > * {
+    padding: 10px 0;
+}
+
+.round-list input[type=text] {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.round-list .active-round {
+    border-color: red;
+}
+
+.interval-insert-box {
+    border: 1px solid grey;
+}
+
+.round-buttons {
+    margin-left: 10px;
+}
