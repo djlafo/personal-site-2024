@@ -6,7 +6,6 @@ function Contact() {
     return <Page>
         <div className='contact'>
             <p>
-                <label>E-mail</label>&nbsp;
                 <a href='mailto:djlafo@gmail.com'>djlafo@gmail.com</a>
             </p>
             <p>

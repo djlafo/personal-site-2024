@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import { Page, TimeInput } from '../../components';
-import Insert from './insert';
+import Insert from './Insert';
 
 import './interval.css';
 
 function Interval() {
     const [remainingTimeArr, setRemainingTimeArr] = useState([25*60, 5*60, 25*60, 5*60, 25*60, 5*60, 25*60, 25*60]);
     const [savedTimeArr, setSavedTimeArr] = useState<Array<number>>([]);
-    const [selectedRound, setSelectedRound] = useState<number>(0);
+    const [selectedRound, setSelectedRound] = useState(0);
 
     const [timerActive, setTimerActive] = useState(false);
 
@@ -39,14 +39,6 @@ function Interval() {
                 return r;
             }
         }));
-    }
-
-    const startTimer = () => {
-        setTimerActive(true)
-    };
-
-    const stopTimer = () => {
-        setTimerActive(false);
     }
 
     const advanceTimer = useCallback(() => {    
@@ -91,7 +83,7 @@ function Interval() {
                                     {   
                                         !timerActive && <span className='round-buttons'>
                                             <input type='button' value='+' onClick={() => setRemainingTimeArr([...remainingTimeArr.slice(0, i+1), 0, ...remainingTimeArr.slice(i+1, remainingTimeArr.length)])}/>
-                                            <input type='button' value='-' onClick={() => setRemainingTimeArr(remainingTimeArr.filter((r, ri) => ri !== i))} />
+                                            <input type='button' value='-' onClick={() => setRemainingTimeArr(remainingTimeArr.filter((_, ri) => ri !== i))} />
                                         </span>
                                     }
                                 </span>
@@ -105,8 +97,8 @@ function Interval() {
             </div>
             <p>
                 { 
-                    (!timerActive && remainingTimeArr.length > 0 && <input className='big-button' type='button' value='Start' onClick={() => startTimer()}/>)
-                    || (timerActive && <input className='big-button' type='button' value='Stop' onClick={() => stopTimer()}/>)
+                    (!timerActive && remainingTimeArr.length > 0 && <input className='big-button' type='button' value='Start' onClick={() => setTimerActive(true)}/>)
+                    || (timerActive && <input className='big-button' type='button' value='Stop' onClick={() => setTimerActive(false)}/>)
                 }
                 {
                     remainingTimeArr.length > 0 && !timerActive && <span>

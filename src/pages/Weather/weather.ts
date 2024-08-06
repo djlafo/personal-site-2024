@@ -63,3 +63,19 @@ export async function getWeather(): Promise<Array<WeatherData>> {
         })();
     });
 }
+
+export function calcHeatIndex(T : number, RH : number) : number {
+    let calc = .5 * (T + 61 + ((T-68)*1.2) + (RH*.094));
+    calc = (calc + T) / 2;
+    if(calc >= 80) {
+        calc = -42.379 + 2.04901523*T + 10.14333127*RH - .22475541*T*RH - .00683783*T*T - .05481717*RH*RH + .00122874*T*T*RH + .00085282*T*RH*RH - .00000199*T*T*RH*RH;
+        if(RH > 85 && T >= 80 && T <=87) {
+            calc -= ((RH-85)/10) * ((87-T)/5);
+        }
+    }
+    return calc;
+}
+
+export function calcWetBulb(T: number, RH : number) : number {
+    return T * Math.atan(0.151977 * Math.sqrt(RH + 8.313689)) + 0.00391838 * Math.sqrt(RH**3) * Math.atan(0.023101 * RH) - Math.atan(RH - 1.676331) + Math.atan(T + RH) - 4.686035;
+}
