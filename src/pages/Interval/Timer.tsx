@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 type timerReturn = [
     {
@@ -38,11 +38,11 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
         _setRound(n);
     }
 
-    const setTimeAt = (n : number, amount: number) => {
+    const setTimeAt = useCallback((n : number, amount: number) => {
         const copy = times.slice();
         copy[n] = amount;
         setTimes(copy);
-    };
+    }, [times]);
 
     const setTimeAtN = (start : number, num : number, time : number) => {
         setTimes(r => r.map((r,i) => {
@@ -54,14 +54,14 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
         }));
     }
 
-    const nextRound = () => {    
+    const nextRound = useCallback(() => {    
         onRoundOver();
         if(round !== times.length - 1) { // if not last timer
             _setRound(round + 1);
         } else {
             setActive(false);
         }
-    };
+    }, [times, round, onRoundOver]);
 
     useEffect(() => {
         if(active) setTimeout(() => { 
@@ -72,7 +72,7 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
                 setTimeAt(round, time-1);
             }
         }, 1000);
-    }, [active, round, times, savedTimes]);
+    }, [active, round, times, nextRound, setTimeAt]);
 
     return [
         {
