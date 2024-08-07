@@ -39,7 +39,7 @@ export function formatWeatherData(weatherData : Array<WeatherData>) : Array<Arra
         tempFormat[tempFormat.length -1][3].data.push( {x: xFormat, color: 'hsl(90, 9%, 85%)', y: Number(wd.windSpeed.split(' ')[0])} );
         tempFormat[tempFormat.length -1][4].data.push( {x: xFormat, color: 'hsl(27, 100%, 61%)', y: calcHeatIndex(wd.temp, wd.humidity)} );
         tempFormat[tempFormat.length -1][5].data.push( {x: xFormat, color: 'hsl(135, 100%, 60%)', y: calcWetBulb(wd.temp, wd.humidity)} );
-        if(wd.UV) tempFormat[tempFormat.length -1][6].data.push( {x: xFormat, color: 'hsl(57, 100%, 61%)', y: wd.UV} );
+        if(wd.UV) tempFormat[tempFormat.length -1][6].data.push( {x: xFormat, color: 'hsl(57, 100%, 61%)', y: wd.UV*10} );
     });
     return tempFormat;
 }
@@ -57,7 +57,7 @@ const MyResponsiveLine = ( { data } : { data: Array<FormattedWeatherDataType> } 
                 Wind: {points[points.length - 4].data.y.toString()} mph<br/>
                 Heat: {Number(points[points.length - 5].data.y).toFixed(1).toString()}<br/>
                 Bulb: {Number(points[points.length - 6].data.y).toFixed(1).toString()}<br/>
-                { points.length >=7 ? `UVIN: ${points[points.length - 7].data.y.toString()}` : '' }<br/>
+                { points.length >=7 ? `UV10: ${points[points.length - 7].data.y.toString()}` : '' }<br/>
             </div>;
         }}
         curve="monotoneX"

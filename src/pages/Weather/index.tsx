@@ -28,9 +28,15 @@ function Weather() {
     const formattedWeatherData : Array<Array<FormattedWeatherDataType>> = useMemo(() => {
         return formatWeatherData(weatherData);
     }, [weatherData]);
-    
+
     return <Page>
         <div>
+            <h3>
+                - UV is only available for current date.  Multiplied by 10 for visibility<br/>
+                <br/>
+                - This is only setup for my location because it's only made for me =)<br/>Though maybe if someone actually wants to use this?<br/>
+            </h3>
+            <br/>
             {
                 weatherData.length && (() : Array<React.ReactNode> => {
                     return formattedWeatherData.map(fwd => <div>
