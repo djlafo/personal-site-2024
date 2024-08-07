@@ -24,7 +24,7 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
     const [times, setTimes] = useState([25*60, 5*60, 25*60, 5*60, 25*60, 5*60, 25*60, 25*60]);
     const [savedTimes, setSavedTimes] = useState<Array<number>>([]);
     const [round, _setRound] = useState(0);
-    const [active, setActive] = useState(false);
+    const [currentTimer, setCurrentTimer] = useState<number | undefined>();
     const [timerDate, setTimerDate] = useState(() => new Date());
     const [, setTimerFlipper] = useState(true);
 
@@ -58,35 +58,41 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
     }
 
     const stopTimer = () => {
-        setActive(false);
+        setCurrentTimer(undefined);
     };
 
     const nextRound = () => {    
-        onRoundOver();
         if(round !== times.length - 1) { // if not last timer
+            setTimerDate(new Date());
+            setCurrentTimer(times[round + 1]);
             _setRound(round + 1);
         } else {
             stopTimer();
         }
+        onRoundOver();
     };
 
     const startTimer = () => {
         setTimerDate(new Date());
-        setActive(true);
+        setCurrentTimer(times[round]);
         setTimeout(() => {
             setTimerFlipper(f => !f);
         }, 1000);
     }
 
-    const currentDate = new Date();
-    if (active && (currentDate.getTime() - timerDate.getTime()) >= 1000) {
-        const time = times[round];
-        if(!time) {
-            nextRound();
-        } else {
-            setTimeAt(round, time-1);
+    if (currentTimer) {
+        const currentDate = new Date();
+        const dateDiff = Math.floor((currentDate.getTime() - timerDate.getTime()) / 1000);
+        const time = currentTimer - dateDiff;
+        if (times[round] !== time) {
+            setTimeAt(round, time < 0 ? 0 : time);
+            if(time <= 0) {
+                nextRound();
+            }
+            setTimeout(() => {
+                setTimerFlipper(f => !f);
+            }, 1000);
         }
-        startTimer();
     }
 
     return [
@@ -94,7 +100,7 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
             times,
             savedTimes,
             round,
-            active
+            active : !!currentTimer
         }, 
         {
             nextRound,
