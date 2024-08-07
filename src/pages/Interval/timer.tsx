@@ -33,11 +33,7 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
     };
 
     const setTimes = (a : Array<number> | React.SetStateAction<Array<number>>) => {
-        if (Array.isArray(a)) {
-            _setTimes(a); 
-        } else {
-            _setTimes(a);    
-        }
+        _setTimes(a);
         if(round > a.length-1) {
             setRound(a.length-1);
         }
