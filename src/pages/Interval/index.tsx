@@ -1,66 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React from 'react';
 
-import { Page, TimeInput } from '../../components';
+import { Page } from '../../components';
 import Insert from './Insert';
+import { useTimer } from './Timer';
+import RoundBox from './RoundBox';
 
 import './interval.css';
 
 function Interval() {
-    const [remainingTimeArr, setRemainingTimeArr] = useState([25*60, 5*60, 25*60, 5*60, 25*60, 5*60, 25*60, 25*60]);
-    const [savedTimeArr, setSavedTimeArr] = useState<Array<number>>([]);
-    const [selectedRound, setSelectedRound] = useState(0);
-
-    const [timerActive, setTimerActive] = useState(false);
-
-    const changeRounds = (n : number) => {
-        setSelectedRound(n ? 0 : n);
-        setRemainingTimeArr((new Array(n).fill(1500)));
-    };
-
-    const changeSelectedRound = (n : number) => {
-        if(n >= remainingTimeArr.length)
-            n = remainingTimeArr.length-1;
-        if(n < 0)
-            n = 0;
-        setSelectedRound(n);
-    }
-
-    const setRemainingTime = useCallback((n : number, amount: number) => {
-        const copy = remainingTimeArr.slice();
-        copy[n] = amount;
-        setRemainingTimeArr(copy);
-    }, [remainingTimeArr]);
-
-    const setupRounds = (start : number, num : number, time : number) => {
-        setRemainingTimeArr(r => r.map((r,i) => {
-            if((i-start) % num === 0 || ( num === 0 && start === i)) {
-                return time;
-            } else {
-                return r;
-            }
-        }));
-    }
-
-    const advanceTimer = useCallback(() => {    
+    const [timerData, setTimerData] = useTimer({ onRoundOver: () => {
         const a = new Audio('/timer-alert.mp3');
-        a.play();    
-        if(selectedRound !== remainingTimeArr.length - 1) { // if not last timer
-            setSelectedRound(selectedRound + 1);
-        } else {
-            setTimerActive(false);
-        }
-    }, [selectedRound, remainingTimeArr]);
-
-    useEffect(() => {
-        if(timerActive) setTimeout(() => { 
-            const time = remainingTimeArr[selectedRound];
-            if(!time) {
-                advanceTimer();
-            } else {
-                setRemainingTime(selectedRound, time-1);
-            }
-        }, 1000);
-    }, [selectedRound, setRemainingTime, remainingTimeArr, timerActive, advanceTimer]);
+        a.play();
+    }});
 
     return <Page>
         <div>
@@ -69,43 +20,50 @@ function Interval() {
             </h1>
             <hr/>
             <p>
-                Rounds <input type="text" value={remainingTimeArr.length || ''} readOnly={timerActive} onChange={e => changeRounds(Number(e.target.value))}/>
+                Rounds 
+                <input type="text" value={timerData.times.length || ''} 
+                    readOnly={timerData.active} 
+                    onChange={e => setTimerData.setRounds(Number(e.target.value))}/>
             </p>
-            {remainingTimeArr.length > 0 && !timerActive && <Insert changeRounds={changeRounds} onSet={setupRounds} readOnly={timerActive}/>}
+            {
+                timerData.times.length > 0 && 
+                !timerData.active && 
+                <Insert changeRounds={setTimerData.setRounds} 
+                    onSet={setTimerData.setTimeAtN} 
+                    readOnly={timerData.active}/>
+            }
             <div className='round-list'>
                 {
-                    (() => {
-                        const roundEle : Array<React.ReactNode> = [];
-                        for(let i=0; i<remainingTimeArr.length; i++) {
-                            roundEle.push(<div className={selectedRound===i ? 'active-round' : ''} key={`${i}-${remainingTimeArr[i]}`}>
-                                <span>
-                                    Round {i+1}
-                                    {   
-                                        !timerActive && <span className='round-buttons'>
-                                            <input type='button' value='+' onClick={() => setRemainingTimeArr([...remainingTimeArr.slice(0, i+1), 0, ...remainingTimeArr.slice(i+1, remainingTimeArr.length)])}/>
-                                            <input type='button' value='-' onClick={() => setRemainingTimeArr(remainingTimeArr.filter((_, ri) => ri !== i))} />
-                                        </span>
-                                    }
-                                </span>
-                                <TimeInput value={remainingTimeArr[i]} readOnly={timerActive} onValueChange={v => setRemainingTime(i, v)} required/>
-                                {(selectedRound !== i && !timerActive && <input type='button' value='Select' onClick={() => changeSelectedRound(i)}></input>) || <span/>}
-                            </div>);
-                        }
-                        return roundEle;
-                    })()
+                    timerData.times.map((t, i) => 
+                        <RoundBox key={`${i}-${timerData.times[timerData.round]}`}
+                            activeRound={i===timerData.round} 
+                            time={t} 
+                            roundNumber={i} 
+                            readOnly={timerData.active}
+                            setTime={v => setTimerData.setTimeAt(i, v)}
+                            removeTime={() => setTimerData.setTimes(timerData.times.filter((_, ri) => ri !== i))}
+                            addTime={() => setTimerData.setTimes([...timerData.times.slice(0, i+1), 0, ...timerData.times.slice(i+1, timerData.times.length)])}
+                            setRound={() => setTimerData.setRound(i)}/>)
                 }
             </div>
             <p>
                 { 
-                    (!timerActive && remainingTimeArr.length > 0 && <input className='big-button' type='button' value='Start' onClick={() => setTimerActive(true)}/>)
-                    || (timerActive && <input className='big-button' type='button' value='Stop' onClick={() => setTimerActive(false)}/>)
-                }
-                {
-                    remainingTimeArr.length > 0 && !timerActive && <span>
-                            <input className='big-button' type='button' value='Save' onClick={() =>  setSavedTimeArr(remainingTimeArr)}/>
-                            <input className='big-button' type='button' value={`Load${savedTimeArr.length ? `(${savedTimeArr.length})` : '(empty)'}`} onClick={() =>  setRemainingTimeArr(savedTimeArr)}/>
-                        </span>
-
+                    (!timerData.active && timerData.times.length > 0 && <span>
+                        <input className='big-button' type='button' 
+                            value='Save' 
+                            onClick={() => setTimerData.setSavedTimes(timerData.times)}/>
+                        <input className='big-button' type='button' 
+                            value={`Load${timerData.savedTimes.length ? `(${timerData.savedTimes.length})` : '(empty)'}`} 
+                            onClick={() => setTimerData.setTimes(timerData.savedTimes)}/>
+                        <input className='big-button' type='button' 
+                            value='Start' 
+                            onClick={() => setTimerData.setActive(true)}/>
+                    </span>)
+                    || 
+                    (timerData.active && 
+                        <input className='big-button' type='button' 
+                            value='Stop' 
+                            onClick={() => setTimerData.setActive(false)}/>)
                 }
             </p>
         </div>
