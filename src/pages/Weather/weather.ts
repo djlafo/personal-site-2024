@@ -30,11 +30,30 @@ export interface WeatherData {
     rainChance: number;
     windSpeed: string;
     desc: string;
-    icon: string
+    icon: string;
+    UV: number | undefined;
 }
 
-const hourlyURL="https://api.weather.gov/gridpoints/LCH/113,87/forecast/hourly";
-// import exampleData from '../example_data.json';
+interface UVAPIData {
+    ORDER: number;
+    ZIP: string;
+    CITY: string;
+    STATE: string;
+    DATE_TIME: string;
+    UV_VALUE: number;
+}
+
+const hourlyURL='https://api.weather.gov/gridpoints/LCH/113,87/forecast/hourly';
+const uvURL='https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/70563/JSON';
+
+const findUV = (a : Array<UVAPIData>, d : Date) => {
+    return a.find(uv => {
+        const day = Number(uv.DATE_TIME.substring(4, 6));
+        const time = uv.DATE_TIME.substring(13).split(' ');
+        const timeTwentyFour = time[1] === 'PM' ? Number(time[0]) + 12 : Number(time[0]);
+        return (d.getDate() === day && d.getHours() === timeTwentyFour);
+    });
+}
 
 export async function getWeather(): Promise<Array<WeatherData>> {
     return new Promise((acc, rej) => {
@@ -42,18 +61,23 @@ export async function getWeather(): Promise<Array<WeatherData>> {
             try {
                 const response: Response = await fetch(hourlyURL);
                 const json: APIData = await response.json();
-                // const json: APIData = exampleData;
+
+                const uvResponse: Response = await fetch(uvURL);
+                const uvJson: Array<UVAPIData> = await uvResponse.json();
+
                 const dataPoints: Array<OriginalWeatherData> = json.properties.periods;
                 const data: Array<WeatherData> = dataPoints.map(e => {
+                    const date = new Date(e.startTime);
                     return {
-                        time: new Date(e.startTime), //.toLocaleString('en-US', {timeZone: 'America/Chicago'}) 
+                        time: date,
                         temp: e.temperature,
                         tempUnit: e.temperatureUnit,
                         humidity: e.relativeHumidity.value,
                         rainChance: e.probabilityOfPrecipitation.value,
                         windSpeed: e.windSpeed,
                         desc: e.shortForecast,
-                        icon: e.icon
+                        icon: e.icon,
+                        UV: findUV(uvJson, date)?.UV_VALUE
                     };
                 });
                 acc(data);

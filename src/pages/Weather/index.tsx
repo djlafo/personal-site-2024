@@ -28,6 +28,7 @@ function Weather() {
     const formattedWeatherData : Array<Array<FormattedWeatherDataType>> = useMemo(() => {
         return formatWeatherData(weatherData);
     }, [weatherData]);
+    
     return <Page>
         <div>
             {

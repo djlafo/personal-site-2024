@@ -21,12 +21,13 @@ export function formatWeatherData(weatherData : Array<WeatherData>) : Array<Arra
         {id: 'rain', color: 'hsl(214, 92%, 49%)', data: []},
         {id: 'wind', color: 'hsl(90, 9%, 85%)', data: []},
         {id: 'heat', color: 'hsl(27, 100%, 61%)', data: []},
-        {id: 'bulb', color: 'hsl(135, 100%, 60%)', data: []}
+        {id: 'bulb', color: 'hsl(135, 100%, 60%)', data: []},
+        {id: 'UV', color: 'hsl(57, 100%, 61%)', data: []}
     ];
 
     let tempFormat : Array<Array<FormattedWeatherDataType>> = [];
     let lastDay : number;
-    weatherData.forEach((wd, i) => {
+    weatherData.forEach(wd => {
         if(lastDay !== wd.time.getDate())  {
             tempFormat.push(JSON.parse(JSON.stringify(template)));
             lastDay = wd.time.getDate();
@@ -38,6 +39,7 @@ export function formatWeatherData(weatherData : Array<WeatherData>) : Array<Arra
         tempFormat[tempFormat.length -1][3].data.push( {x: xFormat, color: 'hsl(90, 9%, 85%)', y: Number(wd.windSpeed.split(' ')[0])} );
         tempFormat[tempFormat.length -1][4].data.push( {x: xFormat, color: 'hsl(27, 100%, 61%)', y: calcHeatIndex(wd.temp, wd.humidity)} );
         tempFormat[tempFormat.length -1][5].data.push( {x: xFormat, color: 'hsl(135, 100%, 60%)', y: calcWetBulb(wd.temp, wd.humidity)} );
+        if(wd.UV) tempFormat[tempFormat.length -1][6].data.push( {x: xFormat, color: 'hsl(57, 100%, 61%)', y: wd.UV} );
     });
     return tempFormat;
 }
@@ -46,14 +48,16 @@ const MyResponsiveLine = ( { data } : { data: Array<FormattedWeatherDataType> } 
     <ResponsiveLine 
         data={data}
         sliceTooltip={point => {
+            const points = point.slice.points;
             return <div className='weather-graph-tooltip'>
                 {new Date(point.slice.points[0].data.x).toLocaleTimeString('en-US', {hour: 'numeric', hour12: true})}<br/>
-                Temp: {point.slice.points[5].data.y.toString()}F<br/>
-                Humi: {point.slice.points[4].data.y.toString()}%<br/>
-                Rain: {point.slice.points[3].data.y.toString()}%<br/>
-                Wind: {point.slice.points[2].data.y.toString()} mph<br/>
-                Heat: {Number(point.slice.points[1].data.y).toFixed(1).toString()}<br/>
-                Bulb: {Number(point.slice.points[0].data.y).toFixed(1).toString()}
+                Temp: {points[points.length - 1].data.y.toString()}F<br/>
+                Humi: {points[points.length - 2].data.y.toString()}%<br/>
+                Rain: {points[points.length - 3].data.y.toString()}%<br/>
+                Wind: {points[points.length - 4].data.y.toString()} mph<br/>
+                Heat: {Number(points[points.length - 5].data.y).toFixed(1).toString()}<br/>
+                Bulb: {Number(points[points.length - 6].data.y).toFixed(1).toString()}<br/>
+                { points.length >=7 ? `UVIN: ${points[points.length - 7].data.y.toString()}` : '' }<br/>
             </div>;
         }}
         curve="monotoneX"
