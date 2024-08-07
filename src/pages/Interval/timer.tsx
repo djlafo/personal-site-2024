@@ -21,7 +21,7 @@ type timerReturn = [
 ];
 
 export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerReturn {
-    const [times, setTimes] = useState([25*60, 5*60, 25*60, 5*60, 25*60, 5*60, 25*60, 25*60]);
+    const [times, _setTimes] = useState([25*60, 5*60, 25*60, 5*60, 25*60, 5*60, 25*60, 25*60]);
     const [savedTimes, setSavedTimes] = useState<Array<number>>([]);
     const [round, _setRound] = useState(0);
     const [currentTimer, setCurrentTimer] = useState<number | undefined>();
@@ -29,9 +29,19 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
     const [, setTimerFlipper] = useState(true);
 
     const setRounds = (n : number) => {
-        setTimes((new Array(n).fill(1500)));
-        _setRound(0);
+        setTimes(new Array(n).fill(1500));
     };
+
+    const setTimes = (a : Array<number> | React.SetStateAction<Array<number>>) => {
+        if (Array.isArray(a)) {
+            _setTimes(a); 
+        } else {
+            _setTimes(a);    
+        }
+        if(round > a.length-1) {
+            setRound(a.length-1);
+        }
+    }
 
     const setRound = (n : number) => {
         if(n >= times.length)
