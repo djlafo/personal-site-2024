@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Page } from '../../components';
 import Insert from './Insert';
-import { useTimer } from './Timer';
+import { useTimer } from './timer';
 import RoundBox from './RoundBox';
 
 import './interval.css';
@@ -20,7 +20,7 @@ function Interval() {
             </h1>
             <hr/>
             <p>
-                Rounds 
+                Rounds&nbsp;
                 <input type="text" value={timerData.times.length || ''} 
                     readOnly={timerData.active} 
                     onChange={e => setTimerData.setRounds(Number(e.target.value))}/>
@@ -57,13 +57,13 @@ function Interval() {
                             onClick={() => setTimerData.setTimes(timerData.savedTimes)}/>
                         <input className='big-button' type='button' 
                             value='Start' 
-                            onClick={() => setTimerData.setActive(true)}/>
+                            onClick={() => setTimerData.startTimer()}/>
                     </span>)
                     || 
                     (timerData.active && 
                         <input className='big-button' type='button' 
                             value='Stop' 
-                            onClick={() => setTimerData.setActive(false)}/>)
+                            onClick={() => setTimerData.stopTimer()}/>)
                 }
             </p>
         </div>

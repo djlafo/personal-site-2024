@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 
 type timerReturn = [
     {
@@ -14,8 +14,9 @@ type timerReturn = [
         setSavedTimes: React.Dispatch<React.SetStateAction<number[]>>;
         setRounds: (n: number) => void;
         setRound: (n: number) => void;
-        setActive: React.Dispatch<React.SetStateAction<boolean>>;
         setTimes: React.Dispatch<React.SetStateAction<number[]>>;
+        startTimer: () => void;
+        stopTimer: () => void;
     }
 ];
 
@@ -24,6 +25,8 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
     const [savedTimes, setSavedTimes] = useState<Array<number>>([]);
     const [round, _setRound] = useState(0);
     const [active, setActive] = useState(false);
+    const [timerDate, setTimerDate] = useState(() => new Date());
+    const [, setTimerFlipper] = useState(true);
 
     const setRounds = (n : number) => {
         setTimes((new Array(n).fill(1500)));
@@ -38,11 +41,11 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
         _setRound(n);
     }
 
-    const setTimeAt = useCallback((n : number, amount: number) => {
+    const setTimeAt = (n : number, amount: number) => {
         const copy = times.slice();
         copy[n] = amount;
         setTimes(copy);
-    }, [times]);
+    };
 
     const setTimeAtN = (start : number, num : number, time : number) => {
         setTimes(r => r.map((r,i) => {
@@ -54,25 +57,37 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
         }));
     }
 
-    const nextRound = useCallback(() => {    
+    const stopTimer = () => {
+        setActive(false);
+    };
+
+    const nextRound = () => {    
         onRoundOver();
         if(round !== times.length - 1) { // if not last timer
             _setRound(round + 1);
         } else {
-            setActive(false);
+            stopTimer();
         }
-    }, [times, round, onRoundOver]);
+    };
 
-    useEffect(() => {
-        if(active) setTimeout(() => { 
-            const time = times[round];
-            if(!time) {
-                nextRound();
-            } else {
-                setTimeAt(round, time-1);
-            }
+    const startTimer = () => {
+        setTimerDate(new Date());
+        setActive(true);
+        setTimeout(() => {
+            setTimerFlipper(f => !f);
         }, 1000);
-    }, [active, round, times, nextRound, setTimeAt]);
+    }
+
+    const currentDate = new Date();
+    if (active && (currentDate.getTime() - timerDate.getTime()) >= 1000) {
+        const time = times[round];
+        if(!time) {
+            nextRound();
+        } else {
+            setTimeAt(round, time-1);
+        }
+        startTimer();
+    }
 
     return [
         {
@@ -88,7 +103,8 @@ export function useTimer({ onRoundOver } : { onRoundOver: () => void }) : timerR
             setSavedTimes,
             setRounds,
             setRound,
-            setActive,
+            startTimer,
+            stopTimer,
             setTimes
         }
     ];
