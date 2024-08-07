@@ -32,7 +32,13 @@ function Weather() {
     return <Page>
         <div>
             <h3>
-                - UV is only available for current date.  Multiplied by 10 for visibility<br/>
+                - UV is only available for current date due to API constraint.  Multiplied by 10 for visibility.<br/>
+                <br/>
+                0-20 low<br/>
+                30-50 moderate<br/>
+                60-70 high<br/>
+                80-100 very high<br/>
+                110+ extreme<br/>
                 <br/>
                 - This is only setup for my location because it's only made for me =)<br/>Though maybe if someone actually wants to use this?<br/>
             </h3>
