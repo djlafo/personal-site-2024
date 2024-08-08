@@ -49,8 +49,8 @@ const uvURL='https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/70563/JSO
 const findUV = (a : Array<UVAPIData>, d : Date) => {
     return a.find(uv => {
         const day = Number(uv.DATE_TIME.substring(4, 6));
-        const time = uv.DATE_TIME.substring(13).split(' ');
-        const timeTwentyFour = time[1] === 'PM' ? Number(time[0]) + 12 : Number(time[0]);
+        const time = uv.DATE_TIME.substring(12).split(' ');
+        const timeTwentyFour = time[1] === 'PM' ? (time[0] === '12' ? Number(time[0]) : Number(time[0]) + 12) : Number(time[0]);
         return (d.getDate() === day && d.getHours() === timeTwentyFour);
     });
 }
