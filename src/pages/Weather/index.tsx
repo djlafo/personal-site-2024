@@ -45,7 +45,7 @@ function Weather() {
             <br/>
             {
                 weatherData.length && (() : Array<React.ReactNode> => {
-                    return formattedWeatherData.map(fwd => <div>
+                    return formattedWeatherData.map(fwd => <div key={fwd[0].data[0].x}>
                         <h2>
                             {days[new Date(fwd[0].data[0].x).getDay()]}
                         </h2>
