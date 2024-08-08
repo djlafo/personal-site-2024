@@ -1,6 +1,8 @@
 .weather-chart {
     width: 1200px;
     height: 700px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .weather-chart-container {
