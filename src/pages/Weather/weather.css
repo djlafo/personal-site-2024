@@ -18,3 +18,7 @@
     font-size: 14pt;
     padding: 5px;
 }
+
+.weather-page input {
+    margin: 20px 0;
+}

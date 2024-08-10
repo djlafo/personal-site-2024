@@ -2,7 +2,7 @@ import React from 'react';
 import HeaderBar from './HeaderBar';
 import './page.css';
 
-function Page({ children }: { children: JSX.Element }) {
+function Page({ children }: { children: JSX.Element | Array<JSX.Element> }) {
     return (
         <div className='page'>
             <nav>

@@ -43,8 +43,8 @@ interface UVAPIData {
     UV_VALUE: number;
 }
 
-const hourlyURL='https://api.weather.gov/gridpoints/LCH/113,87/forecast/hourly';
-const uvURL='https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/70563/JSON';
+const coordinateURL = (coord : string) => `https://api.weather.gov/points/${coord}`;
+const uvURL = (zip: string) => `https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/${zip}/JSON`;
 
 const findUV = (a : Array<UVAPIData>, d : Date) => {
     return a.find(uv => {
@@ -55,10 +55,14 @@ const findUV = (a : Array<UVAPIData>, d : Date) => {
     });
 }
 
-export async function getWeather(): Promise<Array<WeatherData>> {
+export async function getWeather(zip : string, coord : string): Promise<Array<WeatherData>> {
     return new Promise((acc, rej) => {
         (async() => {
             try {
+                const coordResp = await fetch(coordinateURL(coord.replaceAll(' ', '')));
+                const coordJson = await coordResp.json();
+                const hourlyURL = coordJson.properties.forecastHourly;
+
                 type common = {
                     storageKey : string;
                     api: string;
@@ -69,7 +73,7 @@ export async function getWeather(): Promise<Array<WeatherData>> {
                     api: hourlyURL
                 }, {
                     storageKey: 'uv',
-                    api: uvURL
+                    api: uvURL(zip)
                 }];
 
                 const apiFetch = async function<T>(f : common) : Promise<T> {
