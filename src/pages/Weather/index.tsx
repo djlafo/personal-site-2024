@@ -54,6 +54,10 @@ function Weather() {
         return formatWeatherData(weatherData);
     }, [weatherData]);
 
+    const getMax = (a: Array<FormattedWeatherDataType>) : string => {
+        return a.find(ae => ae.id === 'temp')?.data.reduce((d, c) => d.y > c.y ? d : c).y?.toString() || '';
+    }
+
     return <Page>
         <div className='weather-page'>
             <h3>
@@ -74,7 +78,7 @@ function Weather() {
                 (weatherData.length && formattedWeatherData.map(fwd => {
                     return <div key={fwd[0].data[0].x}>
                         <h2>
-                            {days[new Date(fwd[0].data[0].x).getDay()]}
+                            {days[new Date(fwd[0].data[0].x).getDay()]} - Max {getMax(fwd)}
                         </h2>
                         <div className='weather-chart-container'>
                             <div className='weather-chart'>
