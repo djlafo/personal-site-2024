@@ -29,7 +29,7 @@ function Weather() {
             urlParams.set('coords', c2.replaceAll(' ', ''));
             window.location.search = urlParams.toString();
         };
-        if(!coord && z) {
+        if(!c && z) {
             getCoordsFromZip(z).then(c3 => {
                 setCoordsParam(c3);
             }).catch(e => toast(e.message));
