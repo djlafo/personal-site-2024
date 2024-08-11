@@ -60,7 +60,7 @@ function Weather() {
             <ToastContainer />
             <h3>
                 - UV is only available for current date due to API constraint.  Multiplied by 10 for visibility.<br/>
-                - Zip code table obtained form <a href='https://simplemaps.com/data/us-zips' target='_blank' rel='noreferrer'>simplemaps</a><br/>
+                - Zip code table obtained from <a href='https://simplemaps.com/data/us-zips' target='_blank' rel='noreferrer'>simplemaps</a><br/>
                 <br/>
                 0-20 low<br/>
                 30-50 moderate<br/>
