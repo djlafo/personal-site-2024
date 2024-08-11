@@ -67,7 +67,7 @@ function Weather() {
             }, {
                 maximumAge: 60000,
                 timeout: 5000,
-                enableHighAccuracy: true
+                enableHighAccuracy: false
             });
         }
     };
