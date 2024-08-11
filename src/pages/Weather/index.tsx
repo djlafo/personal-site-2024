@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Page from '../../components/Page';
 import MyResponsiveLine, { formatWeatherData, FormattedWeatherDataType } from './WeatherGraph';
 import { getWeather, WeatherData } from './weather';
+import getZipFromCoord from './zipcodes';
 
 import './weather.css';
 
@@ -10,21 +11,22 @@ const days = ['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'];
 function Weather() {
     const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
-    const getDefault = useCallback((s : string) => {
-        return urlParams.get(s) || localStorage.getItem(s) || ''
+    const getCoord = useCallback(() => {
+        return urlParams.get('coord') || localStorage.getItem('coord') || ''
     }, [urlParams]);
 
     const [currentAttempt, setCurrentAttempt] = useState(0);
     const [weatherData, setWeatherData] = useState<Array<WeatherData>>([]);
-    const [zip, setZip] = useState<string>(() => getDefault('zip'));
-    const [coord, setCoord] = useState<string>(() => getDefault('coord'));
+    const [coord, setCoord] = useState<string>(() => getCoord());
 
 
-    const setUrlParams = () => {
-        if(zip && zip.length === 5 && coord) {
-            urlParams.set('coord', coord.replaceAll(' ', ''));
-            urlParams.set('zip', zip);
-            window.location.search = urlParams.toString();
+    const setUrlParams = (c : string) => {
+        if(coord) {
+            const tCoord = c.replaceAll(' ', '').split(',');
+            getZipFromCoord(Number(tCoord[0]), Number(tCoord[1])).then(n => {
+                urlParams.set('coord', `${tCoord[0]},${tCoord[1]}`);
+                window.location.search = urlParams.toString();
+            });
         }
     }
 
@@ -32,8 +34,7 @@ function Weather() {
         setCurrentAttempt(a => a + 1);
         getWeather(zip, coord).then(d => {
             localStorage.setItem('coord', coord);
-            localStorage.setItem('zip', zip);
-            window.history.replaceState(null, '', `?zip=${zip}&coord=${coord}`);
+            window.history.replaceState(null, '', `?coord=${coord}`);
             setWeatherData(d);
         }).catch(r => {
             console.error(r);
@@ -41,14 +42,6 @@ function Weather() {
             loadWeather(zip, coord);
         });
     }, []);
-
-    useEffect(() => {
-        const dZip = getDefault('zip');
-        const dCoord = getDefault('coord');
-        if(dZip && dZip.length === 5 && dCoord) {
-            loadWeather(dZip, dCoord);
-        }
-    }, [loadWeather, urlParams, getDefault]);
 
     const formattedWeatherData : Array<Array<FormattedWeatherDataType>> = useMemo(() => {
         return formatWeatherData(weatherData);
@@ -58,10 +51,33 @@ function Weather() {
         return a.find(ae => ae.id === 'temp')?.data.reduce((d, c) => d.y > c.y ? d : c).y?.toString() || '';
     }
 
+    const grabCoords = () => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.watchPosition(p => {
+                console.log('success');
+                setUrlParams(`${p.coords.latitude},${p.coords.longitude}`);
+            }, e => {
+                console.error(e);
+            });
+        }
+    };
+
+    useEffect(() => {
+        const dCoord = getCoord();
+        if(dCoord) {
+            const dCoordSp = dCoord.replaceAll(' ', '').split(',');
+            getZipFromCoord(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
+                console.log(`ZIP IS ${n}`);
+                loadWeather(n, dCoord);
+            }).catch(e => console.error(e));
+        }
+    }, [loadWeather, getCoord]);
+
     return <Page>
         <div className='weather-page'>
             <h3>
                 - UV is only available for current date due to API constraint.  Multiplied by 10 for visibility.<br/>
+                - Zip code table obtained form <a href='https://simplemaps.com/data/us-zips' target='_blank' rel='noreferrer'>https://simplemaps.com/data/us-zips</a><br/>
                 <br/>
                 0-20 low<br/>
                 30-50 moderate<br/>
@@ -70,8 +86,8 @@ function Weather() {
                 110+ extreme<br/>
                 <br/>
                 Coordinates: <input type='textbox' value={coord} onChange={e => setCoord(e.target.value)}/><br/>
-                Zip: <input type='textbox' value={zip} onChange={e => setZip(e.target.value)}/><br/>
-                <input className='big-button' type='button' value='Get' onClick={() => setUrlParams()}/>
+                <input className='big-button' type='button' value='Autoget Coordinates' onClick={() => grabCoords()}/>
+                <input className='big-button' type='button' value='Get' onClick={() => setUrlParams(coord)}/>
             </h3>
             <br/>
             {

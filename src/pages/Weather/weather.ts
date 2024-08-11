@@ -69,10 +69,10 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                 };
 
                 const fetches : Array<common> = [{
-                    storageKey: 'weather',
+                    storageKey: `weather${zip}`,
                     api: hourlyURL
                 }, {
-                    storageKey: 'uv',
+                    storageKey: `uv${zip}`,
                     api: uvURL(zip)
                 }];
 
