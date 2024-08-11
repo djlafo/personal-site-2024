@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Page from '../../components/Page';
 import MyResponsiveLine, { formatWeatherData, FormattedWeatherDataType } from './WeatherGraph';
 import { getWeather, WeatherData } from './weather';
-import getZipFromCoord from './zipcodes';
+import { getZipFromCoords, getCoordsFromZip } from './zipcodes';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -13,36 +13,41 @@ const days = ['Sun','Mon','Tues','Wed','Thurs','Fri','Sat'];
 function Weather() {
     const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
-    const getCoord = useCallback(() => {
-        return urlParams.get('coord') || localStorage.getItem('coord') || ''
+    const getDefault = useCallback((s : string) => {
+        return urlParams.get(s) || localStorage.getItem(s) || ''
     }, [urlParams]);
 
     const [currentAttempt, setCurrentAttempt] = useState(0);
     const [weatherData, setWeatherData] = useState<Array<WeatherData>>([]);
-    const [coord, setCoord] = useState<string>(() => getCoord());
+    const [coord, setCoord] = useState<string>(() => getDefault('coord'));
+    const [zip, setZip] = useState<string>();
     const [grabbing, setGrabbing] = useState(false);
 
 
-    const setUrlParams = (c : string) => {
-        if(coord) {
-            const tCoord = c.replaceAll(' ', '').split(',');
-            getZipFromCoord(Number(tCoord[0]), Number(tCoord[1])).then(n => {
-                urlParams.set('coord', `${tCoord[0]},${tCoord[1]}`);
-                window.location.search = urlParams.toString();
-            });
+    const setUrlParams = ({ z, coord } : { z?: string, coord?: string}) => {
+        const setCoordParam = (c : string) => {
+            urlParams.set('coords', c.replaceAll(' ', ''));
+            window.location.search = urlParams.toString();
+        };
+        if(!coord && z) {
+            getCoordsFromZip(z).then(c => {
+                setCoordParam(c);
+            }).catch(e => toast(e.message));
+        } else if (coord) {
+            setCoordParam(coord);
         }
     }
 
-    const loadWeather = useCallback((zip: string, coord: string) => {
+    const loadWeather = useCallback((z: string, coord: string) => {
         setCurrentAttempt(a => a + 1);
-        getWeather(zip, coord).then(d => {
-            localStorage.setItem('coord', coord);
-            window.history.replaceState(null, '', `?coord=${coord}`);
+        getWeather(z, coord).then(d => {
+            localStorage.setItem('coords', coord);
+            window.history.replaceState(null, '', `?coords=${coord}`);
             setWeatherData(d);
         }).catch(r => {
             console.error(r);
             setCurrentAttempt(a => a + 1);
-            loadWeather(zip, coord);
+            loadWeather(z, coord);
         });
     }, []);
 
@@ -60,7 +65,7 @@ function Weather() {
             navigator.geolocation.getCurrentPosition(p => {
                 setGrabbing(false);
                 toast('Grabbed coordinates');
-                setUrlParams(`${p.coords.latitude},${p.coords.longitude}`);
+                setUrlParams({ coord: `${p.coords.latitude},${p.coords.longitude}`});
             }, e => {
                 setGrabbing(false);
                 toast.error(e.message);
@@ -73,15 +78,16 @@ function Weather() {
     };
 
     useEffect(() => {
-        const dCoord = getCoord();
+        const dCoord = getDefault('coords');
         if(dCoord) {
             const dCoordSp = dCoord.replaceAll(' ', '').split(',');
-            getZipFromCoord(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
+            getZipFromCoords(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
                 toast(`ZIP set to ${n}`);
+                setZip(n);
                 loadWeather(n, dCoord);
             }).catch(e => console.error(e));
         }
-    }, [loadWeather, getCoord]);
+    }, [loadWeather, getDefault]);
 
     return <Page>
         <div className='weather-page'>
@@ -97,8 +103,10 @@ function Weather() {
                 110+ extreme<br/>
                 <br/>
                 Coordinates: <input type='textbox' value={coord} onChange={e => setCoord(e.target.value)}/><br/>
+                ZIP: <input type='textbox' value={zip} onChange={e => setZip(e.target.value)}/><br/>
+                <input className='big-button' type='button' value='Get by ZIP' onClick={() => setUrlParams({z: zip})}/>
                 <input className='big-button' type='button' value={grabbing ? 'Trying to grab coordinates...' : 'Autoget Coordinates'} readOnly={grabbing} onClick={() => grabCoords()}/>
-                <input className='big-button' type='button' value='Get' onClick={() => setUrlParams(coord)}/>
+                <input className='big-button' type='button' value='Get by Coordinates' onClick={() => setUrlParams({coord: coord})}/>
             </h3>
             <br/>
             {

@@ -77,7 +77,7 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                 }];
 
                 const apiFetch = async function<T>(f : common) : Promise<T> {
-                    return new Promise((acc,rej) => {
+                    return new Promise(acc => {
                         (async() => {
                             const storage = localStorage.getItem(f.storageKey);
                             const date = localStorage.getItem(`${f.storageKey}Date`);

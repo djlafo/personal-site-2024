@@ -9,22 +9,50 @@ interface CsvRow {
     [key: string]: any;
 }
 
-export default async function getZipFromCoord(lat: number, long: number) : Promise<string> {
+async function getCsv() : Promise<Papa.ParseResult<CsvRow>> {
     return new Promise((acc, rej) => {
         (async() => {
             try {
                 const csvRead = await fetch ('./uszips.csv');
                 const csvText = await csvRead.text();
-                const csv = Papa.parse(csvText, {header: true});
+                acc(Papa.parse(csvText, {header: true}));
+            } catch (e) {
+                rej(e);
+            }
+        })();
+    });
+}
+
+export async function getZipFromCoords(lat: number, long: number) : Promise<string> {
+    return new Promise((acc, rej) => {
+        (async() => {
+            try {
+                const csv = await getCsv();
                 const closest = csv.data.reduce((d, c) => {
                     if(!d) return c;
-                    const csvTyped = c as CsvRow;
-                    const dTyped = d as CsvRow;
-                    const dist = getDistance(lat, long, Number(csvTyped.lat), Number(csvTyped.lng));
-                    const dist2 = getDistance(lat, long, Number(dTyped.lat), Number(dTyped.lng));
+                    const dist = getDistance(lat, long, Number(c.lat), Number(c.lng));
+                    const dist2 = getDistance(lat, long, Number(d.lat), Number(d.lng));
                     return dist < dist2 ? c : d; 
                 }) as CsvRow;
                 acc(closest.zip);
+            } catch (e) {
+                rej(e);
+            }
+        })();
+    });
+}
+
+export async function getCoordsFromZip(zip: string) : Promise<string> {
+    return new Promise((acc, rej) => {
+        (async() => {
+            try {
+                const csv = await getCsv();
+                const row = csv.data.find(d => d.zip === zip);
+                if(row) {
+                    acc(`${row.lat},${row.lng}`);
+                } else {
+                    rej({message: 'ZIP not found'});
+                }
             } catch (e) {
                 rej(e);
             }
