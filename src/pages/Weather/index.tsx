@@ -15,7 +15,7 @@ function Weather() {
     const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
     const getDefault = useCallback((s : string) => {
-        return urlParams.get(s) || localStorage.getItem(s) || ''
+        return urlParams.get(s) || ''
     }, [urlParams]);
 
     const [currentAttempt, setCurrentAttempt] = useState(0);
@@ -68,7 +68,7 @@ function Weather() {
                 80-100 very high<br/>
                 110+ extreme<br/>
                 <br/>
-                <WeatherInputs initialZIP={initialZIP} initialCoords={getDefault('coord')} urlParams={urlParams}/>
+                <WeatherInputs initialZIP={initialZIP} initialCoords={getDefault('coords')} urlParams={urlParams}/>
             </h3>
             <br/>
             {
