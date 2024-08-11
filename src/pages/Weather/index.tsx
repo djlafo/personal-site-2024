@@ -15,7 +15,7 @@ function Weather() {
     const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
     const getDefault = useCallback((s : string) => {
-        return urlParams.get(s) || ''
+        return urlParams.get(s) || localStorage.getItem(s) || ''
     }, [urlParams]);
 
     const [currentAttempt, setCurrentAttempt] = useState(0);
