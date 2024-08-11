@@ -105,8 +105,8 @@ function Weather() {
                 Coordinates: <input type='textbox' value={coord} onChange={e => setCoord(e.target.value)}/><br/>
                 ZIP: <input type='textbox' value={zip} onChange={e => setZip(e.target.value)}/><br/>
                 <input className='big-button' type='button' value='Get by ZIP' onClick={() => setUrlParams({z: zip})}/>
-                <input className='big-button' type='button' value={grabbing ? 'Trying to grab coordinates...' : 'Autoget Coordinates'} readOnly={grabbing} onClick={() => grabCoords()}/>
                 <input className='big-button' type='button' value='Get by Coordinates' onClick={() => setUrlParams({coord: coord})}/>
+                <input className='big-button' type='button' value={grabbing ? 'Trying to grab coordinates...' : 'Autoget Coordinates'} readOnly={grabbing} onClick={() => grabCoords()}/>
             </h3>
             <br/>
             {
