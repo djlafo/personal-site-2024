@@ -24,17 +24,17 @@ function Weather() {
     const [grabbing, setGrabbing] = useState(false);
 
 
-    const setUrlParams = ({ z, coord } : { z?: string, coord?: string}) => {
-        const setCoordParam = (c : string) => {
-            urlParams.set('coords', c.replaceAll(' ', ''));
+    const setUrlParams = ({ z, c } : { z?: string, c?: string}) => {
+        const setCoordsParam = (c2 : string) => {
+            urlParams.set('coords', c2.replaceAll(' ', ''));
             window.location.search = urlParams.toString();
         };
         if(!coord && z) {
-            getCoordsFromZip(z).then(c => {
-                setCoordParam(c);
+            getCoordsFromZip(z).then(c3 => {
+                setCoordsParam(c3);
             }).catch(e => toast(e.message));
-        } else if (coord) {
-            setCoordParam(coord);
+        } else if (c) {
+            setCoordsParam(c);
         }
     }
 
@@ -65,7 +65,7 @@ function Weather() {
             navigator.geolocation.getCurrentPosition(p => {
                 setGrabbing(false);
                 toast('Grabbed coordinates');
-                setUrlParams({ coord: `${p.coords.latitude},${p.coords.longitude}`});
+                setUrlParams({ c: `${p.coords.latitude},${p.coords.longitude}`});
             }, e => {
                 setGrabbing(false);
                 toast.error(e.message);
@@ -105,7 +105,7 @@ function Weather() {
                 Coordinates: <input type='textbox' value={coord} onChange={e => setCoord(e.target.value)}/><br/>
                 ZIP: <input type='textbox' value={zip} onChange={e => setZip(e.target.value)}/><br/>
                 <input className='big-button' type='button' value='Get by ZIP' onClick={() => setUrlParams({z: zip})}/>
-                <input className='big-button' type='button' value='Get by Coordinates' onClick={() => setUrlParams({coord: coord})}/>
+                <input className='big-button' type='button' value='Get by Coordinates' onClick={() => setUrlParams({c: coord})}/>
                 <input className='big-button' type='button' value={grabbing ? 'Trying to grab coordinates...' : 'Autoget Coordinates'} readOnly={grabbing} onClick={() => grabCoords()}/>
             </h3>
             <br/>
