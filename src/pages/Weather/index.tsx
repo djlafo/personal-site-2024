@@ -3,6 +3,8 @@ import Page from '../../components/Page';
 import MyResponsiveLine, { formatWeatherData, FormattedWeatherDataType } from './WeatherGraph';
 import { getWeather, WeatherData } from './weather';
 import getZipFromCoord from './zipcodes';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import './weather.css';
 
@@ -18,6 +20,7 @@ function Weather() {
     const [currentAttempt, setCurrentAttempt] = useState(0);
     const [weatherData, setWeatherData] = useState<Array<WeatherData>>([]);
     const [coord, setCoord] = useState<string>(() => getCoord());
+    const [grabbing, setGrabbing] = useState(false);
 
 
     const setUrlParams = (c : string) => {
@@ -53,11 +56,18 @@ function Weather() {
 
     const grabCoords = () => {
         if ("geolocation" in navigator) {
-            navigator.geolocation.watchPosition(p => {
-                console.log('success');
+            setGrabbing(true);
+            navigator.geolocation.getCurrentPosition(p => {
+                setGrabbing(false);
+                toast('Grabbed coordinates');
                 setUrlParams(`${p.coords.latitude},${p.coords.longitude}`);
             }, e => {
-                console.error(e);
+                setGrabbing(false);
+                toast.error(e.message);
+            }, {
+                maximumAge: 60000,
+                timeout: 5000,
+                enableHighAccuracy: true
             });
         }
     };
@@ -67,7 +77,7 @@ function Weather() {
         if(dCoord) {
             const dCoordSp = dCoord.replaceAll(' ', '').split(',');
             getZipFromCoord(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
-                console.log(`ZIP IS ${n}`);
+                toast(`ZIP set to ${n}`);
                 loadWeather(n, dCoord);
             }).catch(e => console.error(e));
         }
@@ -75,6 +85,7 @@ function Weather() {
 
     return <Page>
         <div className='weather-page'>
+            <ToastContainer />
             <h3>
                 - UV is only available for current date due to API constraint.  Multiplied by 10 for visibility.<br/>
                 - Zip code table obtained form <a href='https://simplemaps.com/data/us-zips' target='_blank' rel='noreferrer'>https://simplemaps.com/data/us-zips</a><br/>
@@ -86,7 +97,7 @@ function Weather() {
                 110+ extreme<br/>
                 <br/>
                 Coordinates: <input type='textbox' value={coord} onChange={e => setCoord(e.target.value)}/><br/>
-                <input className='big-button' type='button' value='Autoget Coordinates' onClick={() => grabCoords()}/>
+                <input className='big-button' type='button' value={grabbing ? 'Trying to grab coordinates...' : 'Autoget Coordinates'} readOnly={grabbing} onClick={() => grabCoords()}/>
                 <input className='big-button' type='button' value='Get' onClick={() => setUrlParams(coord)}/>
             </h3>
             <br/>
