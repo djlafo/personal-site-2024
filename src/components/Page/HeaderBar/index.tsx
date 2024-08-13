@@ -19,6 +19,11 @@ function HeaderBar() {
 				Info
 			</Link>
 		</span>
+		<span>
+			<Link to={'/Linux'}>
+				Linux Stuff
+			</Link>
+	    </span>
 	    <span>
 			<Link to={'/Interval'}>
 				Interval Timer
