@@ -31,8 +31,18 @@ code {
 
 
 p {
-  margin: 70px 40px;
   line-height: 1;
+}
+
+@media (min-width: 1200px) {
+  p {
+    margin: 70px 4px;
+  }
+}
+@media (max-width: 1200px) {
+  p {
+    margin: 70px 0;
+  }
 }
 
 input, input:active, input:focus {
