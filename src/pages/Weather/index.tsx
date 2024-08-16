@@ -29,7 +29,7 @@ function Weather() {
             window.history.replaceState(null, '', `?coords=${coord}`);
             setWeatherData(d);
         }).catch(r => {
-            console.error(r);
+            toast(r.message);
             setCurrentAttempt(a => a + 1);
             loadWeather(z, coord);
         });

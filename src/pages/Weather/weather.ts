@@ -77,22 +77,26 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                 }];
 
                 const apiFetch = async function<T>(f : common) : Promise<T> {
-                    return new Promise(acc => {
+                    return new Promise((acc,rej) => {
                         (async() => {
-                            const storage = localStorage.getItem(f.storageKey);
-                            const date = localStorage.getItem(`${f.storageKey}Date`);
-                            let tJson : T;
-                            if(storage && date && new Date(date) > new Date()) {
-                                tJson = JSON.parse(storage);
-                            } else {
-                                const response: Response = await fetch(f.api);
-                                tJson = await response.json();
+                            try {
+                                const storage = localStorage.getItem(f.storageKey);
+                                const date = localStorage.getItem(`${f.storageKey}Date`);
+                                let tJson : T;
+                                if(storage && date && new Date(date) > new Date()) {
+                                    tJson = JSON.parse(storage);
+                                } else {
+                                    const response: Response = await fetch(f.api);
+                                    tJson = await response.json();
+                                }
+                                const hourAhead = new Date(new Date().setHours(new Date().getHours() + 1)).toUTCString();
+                                localStorage.setItem(f.storageKey, JSON.stringify(tJson));
+                                localStorage.setItem(`${f.storageKey}Date`, hourAhead);
+                                acc(tJson);
+                            } catch (e) {
+                                rej(e);
                             }
-                            const hourAhead = new Date(new Date().setHours(new Date().getHours() + 1)).toUTCString();
-                            localStorage.setItem(f.storageKey, JSON.stringify(tJson));
-                            localStorage.setItem(`${f.storageKey}Date`, hourAhead);
     
-                            acc(tJson);
                         })();
                     });
                 }
@@ -116,8 +120,8 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                     };
                 });
                 acc(data);
-            } catch {
-                rej();
+            } catch(e) {
+                rej(e);
             }
         })();
     });
