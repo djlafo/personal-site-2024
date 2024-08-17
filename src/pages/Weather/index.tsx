@@ -30,6 +30,7 @@ function Weather() {
             localStorage.setItem('coords', coord);
             window.history.replaceState(null, '', `?coords=${coord}`);
             setSelectedDay(0);
+            setHideSettings(true);
             setWeatherData(d);
         }).catch(r => {
             toast(r.message);
@@ -49,19 +50,23 @@ function Weather() {
         return res;
     }, [selectedDay, fwd]);
 
+    const startLoadWeather = useCallback((c : string) => {
+        const dCoordSp = c.replaceAll(' ', '').split(',');
+        getZipFromCoords(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
+            setInitialZIP(n);
+            toast(`ZIP set to ${n}`);
+            loadWeather(n, c);
+        }).catch(e => toast(e.message));
+    }, [loadWeather]);
+
     useEffect(() => {
         const dCoord = getDefault('coords');
         if(dCoord) {
-            const dCoordSp = dCoord.replaceAll(' ', '').split(',');
-            getZipFromCoords(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
-                setInitialZIP(n);
-                toast(`ZIP set to ${n}`);
-                loadWeather(n, dCoord);
-            }).catch(e => console.error(e));
+            startLoadWeather(dCoord);
         } else {
             setHideSettings(false);
         }
-    }, [loadWeather, getDefault]);
+    }, [startLoadWeather, getDefault, setHideSettings]);
 
     useEffect(() => {
 		const shiftActive = (e : KeyboardEvent) => {
@@ -92,7 +97,7 @@ function Weather() {
                     60-70 high<br/>
                     80-100 very high<br/>
                 </h3>
-                <WeatherInputs initialZIP={initialZIP} initialCoords={getDefault('coords')} urlParams={urlParams}/>
+                <WeatherInputs initialZIP={initialZIP} initialCoords={getDefault('coords')} doReload={startLoadWeather}/>
             </div>
             {
                 !weatherData.length && currentAttempt > 0 && ` Attempting to load...attempt ${currentAttempt}`

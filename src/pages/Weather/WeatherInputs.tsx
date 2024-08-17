@@ -6,10 +6,10 @@ import { getCoordsFromZip } from './zipcodes';
 interface WeatherInputProps {
     initialCoords: string;
     initialZIP: string;
-    urlParams: URLSearchParams;
+    doReload: (c : string) => void;
 }
 
-export default function WeatherInputs({ initialZIP, initialCoords, urlParams } : WeatherInputProps) {
+export default function WeatherInputs({ initialZIP, initialCoords, doReload } : WeatherInputProps) {
     const [zip, setZip] = useState<string>(initialZIP);
     const [coords, setCoords] = useState<string>(initialCoords);
     const [grabbing, setGrabbing] = useState(false);
@@ -41,8 +41,8 @@ export default function WeatherInputs({ initialZIP, initialCoords, urlParams } :
 
     const setUrlParams = ({ z, c } : { z?: string, c?: string}) => {
         const setCoordsParam = (c2 : string) => {
-            urlParams.set('coords', c2.replaceAll(' ', ''));
-            window.location.search = urlParams.toString();
+            window.history.replaceState(null, '', `?coords=${c2.replaceAll(' ', '')}`);
+            doReload(c2);
         };
         if(!c && z) {
             getCoordsFromZip(z).then(c3 => {
