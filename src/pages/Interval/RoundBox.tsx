@@ -15,15 +15,15 @@ interface RoundProps {
 
 function RoundBox({ activeRound, time, roundNumber, readOnly, setTime, removeTime, addTime, setRound} : RoundProps) {
     return <div className={activeRound ? 'active-round' : ''}>
-        <span>
+        <div className='round-title'>
             Round {roundNumber+1}
             {   
                 !readOnly && <span className='round-buttons'>
-                    <input type='button' value='+' onClick={() => addTime()}/>
                     <input type='button' value='-' onClick={() => removeTime()} />
+                    <input type='button' value='+' onClick={() => addTime()}/>
                 </span>
             }
-        </span>
+        </div>
         <TimeInput value={time} readOnly={readOnly} onValueChange={v => setTime(v)} required/>
         {(!readOnly && !activeRound && <input type='button' value='Select' onClick={() => setRound()}></input>) || <span/>}
     </div>;

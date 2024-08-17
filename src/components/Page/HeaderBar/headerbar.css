@@ -1,16 +1,55 @@
 .header-bar {
-    text-align: center;
-    align-items: center;
-    font-size: 24px;
-    padding: 15px;
+    width: 100%;
+    z-index: 100000;
+    padding: 15px 0px 5px 0px;
+}
+
+.link-list {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
 }
 
-.header-bar .link-list > * {
-    margin: 0 10px;
+.header-bar.opened .link-list {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    padding-top: 50px;
+    background-color: rgba(30,30,30,0.9);
+    z-index: 50;
 }
 
-.header-bar img, .header-bar .counter-div {
-    width: 70px;
+.header-bar:not(.opened) .link-list {
+    display: none;
+}
+
+.link-list span {
+    margin: 20px 0;
+}
+
+.link-list .link-divider {
+    padding-top: 60px;
+}
+
+.burger-menu {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 3px;
+    cursor: pointer;
+    width: 28px;
+}
+
+.burger-menu .burger-bar {
+    height: 3px;
+    background-color: white;
+    margin: 2px 0;
+}
+
+.header-bar.opened .burger-menu .burger-bar {
+    background-color: rgb(200, 200, 200);
 }

@@ -6,11 +6,11 @@
 }
 @media (max-width: 1200px) {
     .page > section {
-	margin-left: 2%;
-	margin-right: 2%;
+        margin-left: 2%;
+        margin-right: 2%;
     }
 }
 
 .page > section {
-    padding: 5px 15px;
+    padding: 0px 15px;
 }

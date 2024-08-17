@@ -32,7 +32,7 @@ function Interval() {
                     onSet={setTimerData.setTimeAtN} 
                     readOnly={timerData.active}/>
             }
-            <div className='round-list'>
+            <div className={`round-list ${timerData.active ? 'active' : ''}`}>
                 {
                     timerData.times.map((t, i) => 
                         <RoundBox key={`${i}-${timerData.times[timerData.round]}`}

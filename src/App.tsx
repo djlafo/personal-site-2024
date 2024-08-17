@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import { Home, Error, Interval, Contact, Weather, Linux } from './pages';
+import { Home, Error, Interval, Weather, Linux } from './pages';
 
 function App() {
   const router = createBrowserRouter([
@@ -13,10 +13,6 @@ function App() {
     {
       path: '/Interval',
       element: <Interval/>,
-    },
-    {
-      path: '/Contact',
-      element: <Contact/>,
     },
     {
       path: '/Weather',

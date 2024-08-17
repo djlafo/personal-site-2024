@@ -19,7 +19,7 @@
 }
 
 .round-list > div > * {
-    padding: 10px 0;
+    padding: 10px 13px;
 }
 
 .round-list input[type=text] {
@@ -31,10 +31,28 @@
     border-color: red;
 }
 
+/* .round-list.active > div:not(.active-round) {
+    display: none;
+} */
+
 .interval-insert-box {
     border: 1px solid grey;
 }
 
+.round-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .round-buttons {
     margin-left: 10px;
+}
+
+.interval-insert-box {
+    padding: 25px 15px;
+}
+
+.interval-insert-box > div:nth-child(1) {
+    margin-bottom: 40px;
 }

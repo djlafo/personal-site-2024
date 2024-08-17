@@ -12,6 +12,20 @@
     overflow-y: visible;
 }
 
+.weather-chart-container-container {
+    text-align: center;
+}
+
+.weather-chart-container-container > h2 {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.weather-chart-container-container > h2 > input {
+    margin: 0 10px;
+}
+
 .weather-graph-tooltip {
     background: #FFFFFF;
     color: #000000;
@@ -19,6 +33,11 @@
     padding: 5px;
 }
 
-.weather-page input {
+.weather-page .settings-box input {
     margin: 20px 0;
+}
+
+.weather-page .settings-box {
+    border: 1px solid cyan;
+    padding: 15px;
 }

@@ -28,12 +28,30 @@ function Insert({onSet, changeRounds, readOnly} : {onSet: onSetFunction, changeR
     return <div>
         <input type="button" onClick={toggleOptions} value={`${hidden ? 'Show' : 'Hide'} Advanced Options...`}/>
         <div hidden={hidden} className='interval-insert-box'>
-            <p>
-                <input disabled={readOnly} type="button" value="Set" onClick={fireOnSet} /> every <input min="0" readOnly={readOnly} value={num} onChange={e => setNum(Number(e.target.value))} type="number"/>th round to <TimeInput value={time} onValueChange={setTime}/> starting at cell <input min="1" readOnly={readOnly} value={start} onChange={e => setStart(Number(e.target.value))} type="number"/>
-            </p>
-            <p>
+            <div>
+                <input disabled={readOnly} 
+                    type="button" 
+                    value="Set" 
+                    onClick={fireOnSet}/> 
+                    &nbsp;every&nbsp; 
+                <input min="0" 
+                    readOnly={readOnly} 
+                    value={num} 
+                    onChange={e => setNum(Number(e.target.value))} 
+                    type="number"/>
+                th round to&nbsp;
+                <TimeInput value={time} 
+                    onValueChange={setTime}/> 
+                &nbsp;starting at cell&nbsp;
+                <input min="1"
+                    readOnly={readOnly} 
+                    value={start} 
+                    onChange={e => setStart(Number(e.target.value))} 
+                    type="number"/>
+            </div>
+            <div>
                 <input disabled={readOnly} type="button" value="Pomodoro" onClick={pomodoro}/>
-            </p>
+            </div>
         </div>
     </div>;
 }
