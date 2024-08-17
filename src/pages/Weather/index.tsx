@@ -11,9 +11,6 @@ import './weather.css';
 import { FormattedWeatherDataType, formatWeatherData } from './WeatherGraph';
 
 function Weather() {
-    const [selectedDay, setSelectedDay] = useState(0);
-    const [hideSettings, setHideSettings] = useState(true);
-
     const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
 
     const getDefault = useCallback((s : string) => {
@@ -23,18 +20,19 @@ function Weather() {
     const [currentAttempt, setCurrentAttempt] = useState(0);
     const [weatherData, setWeatherData] = useState<Array<WeatherData>>([]);
     const [initialZIP, setInitialZIP] = useState<string>('');
+    const [selectedDay, setSelectedDay] = useState(0);
+    const [hideSettings, setHideSettings] = useState(true);
 
     const loadWeather = useCallback((z: string, coord: string) => {
-        setCurrentAttempt(a => a + 1);
         getWeather(z, coord).then(d => {
             localStorage.setItem('coords', coord);
             window.history.replaceState(null, '', `?coords=${coord}`);
             setSelectedDay(0);
             setHideSettings(true);
+            setCurrentAttempt(a => a + 1);
             setWeatherData(d);
         }).catch(r => {
             toast(r.message);
-            setCurrentAttempt(a => a + 1);
             loadWeather(z, coord);
         });
     }, []);
@@ -52,6 +50,8 @@ function Weather() {
 
     const startLoadWeather = useCallback((c : string) => {
         const dCoordSp = c.replaceAll(' ', '').split(',');
+        setWeatherData([]);
+        setCurrentAttempt(1);
         getZipFromCoords(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
             setInitialZIP(n);
             toast(`ZIP set to ${n}`);
@@ -100,7 +100,7 @@ function Weather() {
                 <WeatherInputs initialZIP={initialZIP} initialCoords={getDefault('coords')} doReload={startLoadWeather}/>
             </div>
             {
-                !weatherData.length && currentAttempt > 0 && ` Attempting to load...attempt ${currentAttempt}`
+                !weatherData.length && currentAttempt > 0 && ` Loading...attempt ${currentAttempt}`
             }
             { 
                 (weatherData.length && 

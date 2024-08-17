@@ -6,8 +6,10 @@ const images = ['desk2.png', 'desk1.png', 'desk3.png', 'desk2-1.png', 'desk3-3.p
 
 export default function Linux() {
     const [activeImage, setActiveImage] = useState(0);
+    const [imageLoading, setImageLoading] = useState(true);
 
     const increment = (n: number, inc: number) : number => {
+        setImageLoading(true);
         const res = n + inc;
         if(res < 0) return images.length-1;
         if(res >= images.length) return 0;
@@ -36,16 +38,22 @@ export default function Linux() {
             I wrote a script and a SCSS template to generate a basic theme on the fly for the wallpaper, then add tweaks from there
         </p>
         <div className='linux'>
-            <span>
+            <div>
                 <input type='button' value='<' onClick={() => setActiveImage(a => increment(a, - 1))}/>
-                {activeImage+1} / {images.length}
+                {activeImage+1} / {images.length} 
                 <input type='button' value='>' onClick={() => setActiveImage(a => increment(a, 1))}/>
-            </span>
+            </div>
+            <div className={imageLoading ? '' : 'loaded'}>
+                <div className='loader'/>
+            </div>
             <a href={`./${images[activeImage]}`} 
-                target='_blank' rel='noreferrer'>
+                hidden={imageLoading}
+                target='_blank' 
+                rel='noreferrer'>
                     <img src={`./${images[activeImage]}`} 
                         alt='desktop' 
-                        className='large'/>
+                        className='large'
+                        onLoad={() => setImageLoading(false)}/>
             </a>
         </div>
     </Page>;
