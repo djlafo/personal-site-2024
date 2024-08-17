@@ -59,7 +59,7 @@ function Weather() {
                 loadWeather(n, dCoord);
             }).catch(e => console.error(e));
         } else {
-            setHideSettings(true);
+            setHideSettings(false);
         }
     }, [loadWeather, getDefault]);
 
