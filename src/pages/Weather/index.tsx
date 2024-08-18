@@ -24,6 +24,7 @@ function Weather() {
     const [hideSettings, setHideSettings] = useState(true);
 
     const loadWeather = useCallback((z: string, coord: string) => {
+        let times = 0;
         getWeather(z, coord).then(d => {
             localStorage.setItem('coords', coord);
             localStorage.setItem('zip', z);
@@ -33,7 +34,13 @@ function Weather() {
             setCurrentAttempt(a => a + 1);
             setWeatherData(d);
         }).catch(r => {
-            toast(r.message);
+            if(times > 2) {
+                toast(r.message);
+            } else {
+                toast('Too many attempts, clearing localstorage');
+                localStorage.clear();
+            }
+            times++;
             loadWeather(z, coord);
         });
     }, []);
