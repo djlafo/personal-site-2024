@@ -16,6 +16,18 @@
     text-align: center;
 }
 
+.weather-chart-container-container > input {
+    margin-bottom: 20px;
+}
+
+.weather-chart-container-container .chart-filters {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 250px;
+    align-items: flex-start;
+}
+
 .weather-chart-container-container > h2 {
     display: flex;
     justify-content: space-around;
@@ -31,13 +43,20 @@
     color: #000000;
     font-size: 14pt;
     padding: 5px;
+    text-align: left;
 }
 
-.weather-page .settings-box input {
-    margin: 20px 0;
+.weather-page .settings-box input[type=textbox] {
+    margin: 5px 0;
 }
 
-.weather-page .settings-box {
-    border: 1px solid cyan;
-    padding: 15px;
+.weather-input-buttons {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.weather-input-buttons > input {
+    margin: 10px 10px;
 }

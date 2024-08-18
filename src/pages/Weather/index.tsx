@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import './weather.css';
 import { FormattedWeatherDataType, formatWeatherData } from './WeatherGraph';
+import { Modal } from '../../components';
 
 function Weather() {
     const urlParams = useMemo(() => new URLSearchParams(window.location.search), []);
@@ -19,14 +20,14 @@ function Weather() {
 
     const [currentAttempt, setCurrentAttempt] = useState(0);
     const [weatherData, setWeatherData] = useState<Array<WeatherData>>([]);
-    const [initialZIP, setInitialZIP] = useState<string>('');
     const [selectedDay, setSelectedDay] = useState(0);
     const [hideSettings, setHideSettings] = useState(true);
 
     const loadWeather = useCallback((z: string, coord: string) => {
         getWeather(z, coord).then(d => {
             localStorage.setItem('coords', coord);
-            window.history.replaceState(null, '', `?coords=${coord}`);
+            localStorage.setItem('zip', z);
+            window.history.replaceState(null, '', `?coords=${coord}&zip=${z}`);
             setSelectedDay(0);
             setHideSettings(true);
             setCurrentAttempt(a => a + 1);
@@ -48,21 +49,17 @@ function Weather() {
         return res;
     }, [selectedDay, fwd]);
 
-    const startLoadWeather = useCallback((c : string) => {
-        const dCoordSp = c.replaceAll(' ', '').split(',');
+    const startLoadWeather = useCallback((c : string, z : string) => {
         setWeatherData([]);
         setCurrentAttempt(1);
-        getZipFromCoords(Number(dCoordSp[0]), Number(dCoordSp[1])).then(n => {
-            setInitialZIP(n);
-            toast(`ZIP set to ${n}`);
-            loadWeather(n, c);
-        }).catch(e => toast(e.message));
+        loadWeather(z, c);
     }, [loadWeather]);
 
     useEffect(() => {
         const dCoord = getDefault('coords');
+        const dZip = getDefault('zip')
         if(dCoord) {
-            startLoadWeather(dCoord);
+            startLoadWeather(dCoord, dZip);
         } else {
             setHideSettings(false);
         }
@@ -86,19 +83,24 @@ function Weather() {
     return <Page>
         <div className='weather-page'>
             <ToastContainer />
-            <input type='button' value={hideSettings ? 'Show' : 'Hide'} onClick={() => setHideSettings(h => !h)}/>
-            <div className='settings-box' hidden={hideSettings}>
-                <h3>
-                    - UV is only available for current date due to API constraint.  Multiplied by 10 for visibility.<br/>
-                    - Zip code table obtained from <a href='https://simplemaps.com/data/us-zips' target='_blank' rel='noreferrer'>simplemaps</a><br/>
-                    <br/>
-                    0-20 low<br/>
-                    30-50 moderate<br/>
-                    60-70 high<br/>
-                    80-100 very high<br/>
-                </h3>
-                <WeatherInputs initialZIP={initialZIP} initialCoords={getDefault('coords')} doReload={startLoadWeather}/>
-            </div>
+            <input type='button' value='Settings' onClick={() => setHideSettings(false)}/>
+            <Modal onClose={() => setHideSettings(true)} styleOne opened={!hideSettings}>
+                <div className='settings-box'>
+                    <h2>
+                        Weather Settings
+                    </h2>
+                    <p>
+                        - UV is only available for current date due to API constraint.  Multiplied by 10 for visibility.<br/>
+                        - Zip code table obtained from <a href='https://simplemaps.com/data/us-zips' target='_blank' rel='noreferrer'>simplemaps</a><br/>
+                        <br/>
+                        0-20 low<br/>
+                        30-50 moderate<br/>
+                        60-70 high<br/>
+                        80-100 very high<br/>
+                    </p>
+                    <WeatherInputs initialZIP={getDefault('zip')} initialCoords={getDefault('coords')} doReload={startLoadWeather}/>
+                </div>
+            </Modal>
             {
                 !weatherData.length && currentAttempt > 0 && ` Loading...attempt ${currentAttempt}`
             }

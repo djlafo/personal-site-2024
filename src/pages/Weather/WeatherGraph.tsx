@@ -1,5 +1,6 @@
 import { ResponsiveLine } from '@nivo/line';
 import { WeatherData, calcHeatIndex, calcWetBulb } from './weather';
+import React from 'react';
 
 interface Point {
     x: string;
@@ -50,14 +51,44 @@ const MyResponsiveLine = ( { data } : { data: Array<FormattedWeatherDataType> } 
         sliceTooltip={point => {
             const points = point.slice.points;
             return <div className='weather-graph-tooltip'>
-                {new Date(point.slice.points[0].data.x).toLocaleTimeString('en-US', {hour: 'numeric', hour12: true})}<br/>
-                Temp: {points[points.length - 1].data.y.toString()}F<br/>
-                Humi: {points[points.length - 2].data.y.toString()}%<br/>
-                Rain: {points[points.length - 3].data.y.toString()}%<br/>
-                Wind: {points[points.length - 4].data.y.toString()} mph<br/>
-                Heat: {Number(points[points.length - 5].data.y).toFixed(1).toString()}<br/>
-                Bulb: {Number(points[points.length - 6].data.y).toFixed(1).toString()}<br/>
-                { points.length >=7 ? `UV10: ${points[points.length - 7].data.y.toString()}` : '' }<br/>
+                [{new Date(point.slice.points[0].data.x).toLocaleTimeString('en-US', {hour: 'numeric', hour12: true})}]<br/>
+                {
+                    points.map(p => {
+                        let spanTxt = '';
+                        switch(p.id.split('.')[0]) {
+                            case 'temp':
+                                spanTxt = `Temp: ${p.data.y}F`;
+                                break;
+                            case 'humidity':
+                                spanTxt = `Humi: ${p.data.y}%`;
+                                break;
+                            case 'rain':
+                                spanTxt = `Rain: ${p.data.y}%`;
+                                break;
+                            case 'wind':
+                                spanTxt = `Wind: ${p.data.y}mph`;
+                                break;
+                            case 'heat':
+                                spanTxt = `Heat: ${Number(p.data.y).toFixed(1)}F`;
+                                break;
+                            case 'bulb':
+                                spanTxt = `UV10: ${Number(p.data.y).toFixed(1)}F`;
+                                break;
+                            case 'UV':
+                                spanTxt = `UV10: ${p.data.y}`;
+                                break;
+                            default:
+                                spanTxt = `Unknown: ${p.data.y}`;
+                                break;
+                        }
+                        return <React.Fragment key={p.id}>
+                            <span>
+                                {spanTxt}
+                            </span>
+                            <br/>
+                        </React.Fragment>;
+                    })
+                }
             </div>;
         }}
         curve="monotoneX"
