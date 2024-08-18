@@ -34,14 +34,14 @@ function Weather() {
             setCurrentAttempt(a => a + 1);
             setWeatherData(d);
         }).catch(r => {
-            if(times > 2) {
+            if(times < 2) {
                 toast(r.message);
+                times++;
+                loadWeather(z, coord);
             } else {
                 toast('Too many attempts, clearing localstorage');
                 localStorage.clear();
             }
-            times++;
-            loadWeather(z, coord);
         });
     }, []);
 
