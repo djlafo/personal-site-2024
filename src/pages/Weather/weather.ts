@@ -96,7 +96,6 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                             } catch (e) {
                                 rej(e);
                             }
-    
                         })();
                     });
                 }

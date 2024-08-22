@@ -1,7 +1,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Page from '../../components/Page';
 import { getWeather, WeatherData } from './weather';
-import { getZipFromCoords } from './zipcodes';
 import WeatherInputs from './WeatherInputs';
 import WeatherGraphContainer from './WeatherGraphContainer';
 import { ToastContainer, toast } from 'react-toastify';
@@ -23,8 +22,7 @@ function Weather() {
     const [selectedDay, setSelectedDay] = useState(0);
     const [hideSettings, setHideSettings] = useState(true);
 
-    const loadWeather = useCallback((z: string, coord: string) => {
-        let times = 0;
+    const loadWeather = useCallback((z: string, coord: string, times : number = 0) => {
         getWeather(z, coord).then(d => {
             localStorage.setItem('coords', coord);
             localStorage.setItem('zip', z);
@@ -36,8 +34,7 @@ function Weather() {
         }).catch(r => {
             if(times < 2) {
                 toast(r.message);
-                times++;
-                loadWeather(z, coord);
+                loadWeather(z, coord, times + 1);
             } else {
                 toast('Too many attempts, clearing localstorage');
                 localStorage.clear();
