@@ -60,6 +60,7 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
         (async() => {
             try {
                 const coordResp = await fetch(coordinateURL(coord.replaceAll(' ', '')));
+                if(!coordResp.ok) throw new Error(`${coordResp.url}: ${coordResp.statusText}`, { cause: coordResp });
                 const coordJson = await coordResp.json();
                 const hourlyURL = coordJson.properties.forecastHourly;
 
@@ -87,6 +88,7 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                                     tJson = JSON.parse(storage);
                                 } else {
                                     const response: Response = await fetch(f.api);
+                                    if(!response.ok) throw new Error(`${response.url}: ${response.statusText}`, { cause: response });
                                     tJson = await response.json();
                                 }
                                 const hourAhead = new Date(new Date().setHours(new Date().getHours() + 1)).toUTCString();

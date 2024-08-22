@@ -36,10 +36,12 @@ function Weather() {
                 toast(r.message);
                 loadWeather(z, coord, times + 1);
             } else {
-                toast('Too many attempts, clearing localstorage');
-                localStorage.clear();
-                window.history.replaceState(null, '', '?');
-                window.location.reload();
+                toast('Too many attempts, clearing data and refreshing');
+                setTimeout(() => {
+                    localStorage.clear();
+                    window.history.replaceState(null, '', '?');
+                    window.location.reload();
+                }, 7000);
             }
         });
     }, []);
