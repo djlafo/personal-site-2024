@@ -38,7 +38,7 @@ function Weather() {
             } else {
                 toast('Too many attempts, clearing localstorage');
                 localStorage.clear();
-                window.history.replaceState(null, '', '');
+                window.history.replaceState(null, '', '?');
                 window.location.reload();
             }
         });
