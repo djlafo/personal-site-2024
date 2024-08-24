@@ -23,7 +23,7 @@ export function formatWeatherData(weatherData : Array<WeatherData>) : Array<Arra
         {id: 'wind', color: 'hsl(90, 9%, 85%)', data: []},
         {id: 'heat', color: 'hsl(27, 100%, 61%)', data: []},
         {id: 'bulb', color: 'hsl(135, 100%, 60%)', data: []},
-        {id: 'UV', color: 'hsl(57, 100%, 61%)', data: []}
+        {id: 'uv', color: 'hsl(57, 100%, 61%)', data: []}
     ];
 
     let tempFormat : Array<Array<FormattedWeatherDataType>> = [];
@@ -40,7 +40,7 @@ export function formatWeatherData(weatherData : Array<WeatherData>) : Array<Arra
         tempFormat[tempFormat.length -1][3].data.push( {x: xFormat, color: 'hsl(90, 9%, 85%)', y: Number(wd.windSpeed.split(' ')[0])} );
         tempFormat[tempFormat.length -1][4].data.push( {x: xFormat, color: 'hsl(27, 100%, 61%)', y: calcHeatIndex(wd.temp, wd.humidity)} );
         tempFormat[tempFormat.length -1][5].data.push( {x: xFormat, color: 'hsl(135, 100%, 60%)', y: calcWetBulb(wd.temp, wd.humidity)} );
-        if(wd.UV || wd.UV === 0) tempFormat[tempFormat.length -1][6].data.push( {x: xFormat, color: 'hsl(57, 100%, 61%)', y: wd.UV*10} );
+        if(wd.uv || wd.uv === 0) tempFormat[tempFormat.length -1][6].data.push( {x: xFormat, color: 'hsl(57, 100%, 61%)', y: wd.uv*10} );
     });
     return tempFormat;
 }
@@ -55,7 +55,7 @@ const MyResponsiveLine = ( { data } : { data: Array<FormattedWeatherDataType> } 
                 {
                     points.map(p => {
                         let spanTxt = '';
-                        switch(p.id.split('.')[0]) {
+                        switch(p.serieId) {
                             case 'temp':
                                 spanTxt = `Temp: ${p.data.y}F`;
                                 break;
@@ -72,9 +72,9 @@ const MyResponsiveLine = ( { data } : { data: Array<FormattedWeatherDataType> } 
                                 spanTxt = `Heat: ${Number(p.data.y).toFixed(1)}F`;
                                 break;
                             case 'bulb':
-                                spanTxt = `UV10: ${Number(p.data.y).toFixed(1)}F`;
+                                spanTxt = `Bulb: ${Number(p.data.y).toFixed(1)}F`;
                                 break;
-                            case 'UV':
+                            case 'uv':
                                 spanTxt = `UV10: ${p.data.y}`;
                                 break;
                             default:

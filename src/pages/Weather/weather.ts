@@ -31,7 +31,7 @@ export interface WeatherData {
     windSpeed: string;
     desc: string;
     icon: string;
-    UV: number | undefined;
+    uv: number | undefined;
 }
 
 interface UVAPIData {
@@ -117,7 +117,7 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                         windSpeed: e.windSpeed,
                         desc: e.shortForecast,
                         icon: e.icon,
-                        UV: findUV(uvJson, date)?.UV_VALUE
+                        uv: findUV(uvJson, date)?.UV_VALUE
                     };
                 });
                 acc(data);
