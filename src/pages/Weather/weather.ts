@@ -55,55 +55,54 @@ const findUV = (a : Array<UVAPIData>, d : Date) => {
     });
 }
 
+type common = {
+    storageKey : string;
+    api: string;
+};
+const apiFetch = async function<T>(f : common) : Promise<T> {
+    return new Promise((acc,rej) => {
+        (async() => {
+            try {
+                const storage = localStorage.getItem(f.storageKey);
+                const date = localStorage.getItem(`${f.storageKey}Date`);
+                let tJson : T;
+                if(storage && date && new Date(date) > new Date()) {
+                    tJson = JSON.parse(storage);
+                } else {
+                    const response: Response = await fetch(f.api);
+                    if(!response.ok) throw new Error(`${response.url}: ${response.statusText}`, { cause: response });
+                    tJson = await response.json();
+                }
+                const hourAhead = new Date(new Date().setHours(new Date().getHours() + 1)).toUTCString();
+                localStorage.setItem(f.storageKey, JSON.stringify(tJson));
+                localStorage.setItem(`${f.storageKey}Date`, hourAhead);
+                acc(tJson);
+            } catch (e) {
+                rej(e);
+            }
+        })();
+    });
+}
+
 export async function getWeather(zip : string, coord : string): Promise<Array<WeatherData>> {
     return new Promise((acc, rej) => {
         (async() => {
             try {
+                const uvProm = apiFetch<Array<UVAPIData>>({
+                    storageKey: `uv${zip}`,
+                    api: uvURL(zip)
+                });
+
                 const coordResp = await fetch(coordinateURL(coord.replaceAll(' ', '')));
                 if(!coordResp.ok) throw new Error(`${coordResp.url}: ${coordResp.statusText}`, { cause: coordResp });
                 const coordJson = await coordResp.json();
                 const hourlyURL = coordJson.properties.forecastHourly;
 
-                type common = {
-                    storageKey : string;
-                    api: string;
-                };
-
-                const fetches : Array<common> = [{
+                const weatherJson : APIData = await apiFetch<APIData>({
                     storageKey: `weather${zip}`,
                     api: hourlyURL
-                }, {
-                    storageKey: `uv${zip}`,
-                    api: uvURL(zip)
-                }];
-
-                const apiFetch = async function<T>(f : common) : Promise<T> {
-                    return new Promise((acc,rej) => {
-                        (async() => {
-                            try {
-                                const storage = localStorage.getItem(f.storageKey);
-                                const date = localStorage.getItem(`${f.storageKey}Date`);
-                                let tJson : T;
-                                if(storage && date && new Date(date) > new Date()) {
-                                    tJson = JSON.parse(storage);
-                                } else {
-                                    const response: Response = await fetch(f.api);
-                                    if(!response.ok) throw new Error(`${response.url}: ${response.statusText}`, { cause: response });
-                                    tJson = await response.json();
-                                }
-                                const hourAhead = new Date(new Date().setHours(new Date().getHours() + 1)).toUTCString();
-                                localStorage.setItem(f.storageKey, JSON.stringify(tJson));
-                                localStorage.setItem(`${f.storageKey}Date`, hourAhead);
-                                acc(tJson);
-                            } catch (e) {
-                                rej(e);
-                            }
-                        })();
-                    });
-                }
-
-                const weatherJson : APIData = await apiFetch<APIData>(fetches[0]);
-                const uvJson : Array<UVAPIData> = await apiFetch<Array<UVAPIData>>(fetches[1])
+                });
+                const uvJson : Array<UVAPIData> = await uvProm;
 
                 const dataPoints : Array<OriginalWeatherData> = weatherJson.properties.periods;
                 const data: Array<WeatherData> = dataPoints.map(e => {
