@@ -23,7 +23,8 @@
 .linux > div {
     display: flex;
     width: 100%;
-    justify-content: space-around;
+    justify-content: center;
+    align-items: center;
 }
 
 .linux input[type='button'] {

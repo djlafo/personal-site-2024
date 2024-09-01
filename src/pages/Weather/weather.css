@@ -17,7 +17,7 @@
 }
 
 .weather-chart-container-container > input {
-    margin-bottom: 20px;
+    margin: 0 10px 20px 10px;
 }
 
 .weather-chart-container-container .chart-filters {
@@ -30,12 +30,12 @@
 
 .weather-chart-container-container > h2 {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
 }
 
 .weather-chart-container-container > h2 > input {
-    margin: 0 10px;
+    margin: 0 30px;
 }
 
 .weather-graph-tooltip {

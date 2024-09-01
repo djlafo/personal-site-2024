@@ -32,6 +32,9 @@ export default function Linux() {
 	}, [setActiveImage])
 
     return <Page>
+        <h2>
+            Themes
+        </h2>
         <p>
             Check out my custom desktop themes (Debian btw)<br/>
             <br/>

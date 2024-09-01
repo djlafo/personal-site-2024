@@ -6,9 +6,18 @@ interface ModalProps {
     opened: boolean;
     children: JSX.Element | Array<JSX.Element>;
     styleOne?: boolean;
+    doOnKey?: (e: KeyboardEvent) => void;
 }
 
-export default function Modal({ opened, children, onClose, styleOne=false } : ModalProps) {
+export function openOnEscFn(openFn : () => void) {
+    return (e: KeyboardEvent) => {
+        if(e.key === 'Escape' && !document.querySelector('.modal-parent.opened')) {
+            openFn();
+        }
+    }
+}
+
+export default function Modal({ opened, children, onClose, styleOne=false, doOnKey} : ModalProps) {
     const [prevOpened, setPrevOpened] = useState(false);
 
     if((prevOpened !== opened)) {
@@ -17,16 +26,17 @@ export default function Modal({ opened, children, onClose, styleOne=false } : Mo
 
     useEffect(() => {
 		const onEsc = (e : KeyboardEvent) => {
-			if(e.key === "Escape") {
-				onClose();
-			}
+            doOnKey && doOnKey(e);
+            if(opened && e.key === "Escape") {
+                onClose();
+            }
 		};
 
-		window.addEventListener('keydown', onEsc)
+		window.addEventListener('keydown', onEsc);
 		return () => {
 			window.removeEventListener('keydown', onEsc);
 		}
-	}, [onClose])
+	}, [onClose, doOnKey, opened]);
 
     return <div className={`modal-parent ${prevOpened ? 'opened' : ''}`}>
         <div className='modal-background' onClick={() => onClose()}></div>

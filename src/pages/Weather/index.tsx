@@ -91,7 +91,6 @@ function Weather() {
     return <Page>
         <div className='weather-page'>
             <ToastContainer />
-            <input type='button' value='Settings' onClick={() => setHideSettings(false)}/>
             <Modal onClose={() => setHideSettings(true)} styleOne opened={!hideSettings}>
                 <div className='settings-box'>
                     <h2>
@@ -115,7 +114,9 @@ function Weather() {
             { 
                 (weatherData.length && 
                 <WeatherGraphContainer data={fwd[selectedDay]}
-                    onIncrementDay={(n : number) => setSelectedDay(increment(n))}/>) || '' 
+                    onIncrementDay={(n : number) => setSelectedDay(increment(n))}>
+                    <input type='button' value='Settings' onClick={() => setHideSettings(false)}/>
+                </WeatherGraphContainer>) || '' 
             }
         </div>
     </Page>;

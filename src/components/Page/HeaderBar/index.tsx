@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './headerbar.css';
 import { Link } from 'react-router-dom';
 import { Modal } from '../../';
+import { openOnEscFn } from '../../Modal';
 
 function HeaderBar() {
 	const [open, setOpen] = useState(false);
@@ -13,7 +14,7 @@ function HeaderBar() {
 				<div className='burger-bar'/>
 			</div>
 			
-			<Modal opened={open} onClose={() => setOpen(false)}>
+			<Modal opened={open} onClose={() => setOpen(false)} doOnKey={openOnEscFn(() => setOpen(true))}>
 				<nav className='link-list'>
 					<span>
 						<Link to={'/'}>

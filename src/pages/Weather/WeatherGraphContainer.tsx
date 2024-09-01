@@ -5,6 +5,7 @@ import { Modal } from '../../components';
 interface WeatherGraphContainerType {
     data : Array<FormattedWeatherDataType>;
     onIncrementDay : (n: number) => void;
+    children: JSX.Element | Array<JSX.Element>;
 }
 
 interface WeatherProps {
@@ -12,7 +13,7 @@ interface WeatherProps {
     enabled: boolean;
 }
 
-export default function WeatherGraphContainer({ data, onIncrementDay } : WeatherGraphContainerType) {
+export default function WeatherGraphContainer({ data, onIncrementDay, children } : WeatherGraphContainerType) {
     const [prevData, setPrevData] = useState<Array<FormattedWeatherDataType>>([]);
     const [weatherProps, setWeatherProps] = useState<Array<WeatherProps>>([]);
     const [filterOpen, setFilterOpen] = useState(false);
@@ -58,6 +59,7 @@ export default function WeatherGraphContainer({ data, onIncrementDay } : Weather
             {date.toDateString()} - Max {getMax(data)}
             <input type='button' value='>' onClick={() => onIncrementDay(1)}/>
         </h2>
+        {children}
         <input type='button' value='Filter' onClick={() => setFilterOpen(true)}/>
         <Modal opened={filterOpen} onClose={() => setFilterOpen(false)} styleOne>
             <div className='chart-filters'>
