@@ -17,7 +17,7 @@ function Weather() {
         return urlParams.get(s) || localStorage.getItem(s) || ''
     }, [urlParams]);
 
-    const [currentAttempt, setCurrentAttempt] = useState(0);
+    // const [currentAttempt, setCurrentAttempt] = useState(0);
     const [weatherData, setWeatherData] = useState<Array<WeatherData>>([]);
     const [selectedDay, setSelectedDay] = useState(0);
     const [hideSettings, setHideSettings] = useState(true);
@@ -29,7 +29,7 @@ function Weather() {
             window.history.replaceState(null, '', `?coords=${coord}&zip=${z}`);
             setSelectedDay(0);
             setHideSettings(true);
-            setCurrentAttempt(a => a + 1);
+            // setCurrentAttempt(a => a + 1);
             setWeatherData(d);
         }).catch(r => {
             if(times < 2) {
@@ -59,7 +59,7 @@ function Weather() {
 
     const startLoadWeather = useCallback((c : string, z : string) => {
         setWeatherData([]);
-        setCurrentAttempt(1);
+        // setCurrentAttempt(1);
         loadWeather(z, c);
     }, [loadWeather]);
 
@@ -108,9 +108,9 @@ function Weather() {
                     <WeatherInputs initialZIP={getDefault('zip')} initialCoords={getDefault('coords')} doReload={startLoadWeather}/>
                 </div>
             </Modal>
-            {
+            {/* {
                 !weatherData.length && currentAttempt > 0 && <span className='loading-text'>Loading...attempt ${currentAttempt}</span>
-            }
+            } */}
             { 
                 (weatherData.length && 
                 <WeatherGraphContainer data={fwd[selectedDay]}
