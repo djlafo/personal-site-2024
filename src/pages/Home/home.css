@@ -1,7 +1,6 @@
 .home h1 {
     text-align: center;
     animation: fadein 0.2s;
-    margin-top: 60px;
 }
 
 img.selfie {
@@ -21,11 +20,13 @@ img.selfie {
     }
     .home h1 {
         margin-bottom: 0;
+        margin-top: 0;
     }
 }
 @media screen and (min-width: 1800px) {
     .home h1 {
         margin-bottom: 50px;
+        margin-top: 60px;
     }
     .home p {
         padding-right: 30px;
@@ -36,4 +37,5 @@ img.selfie {
 .home p {
     animation: fadein 0.6s;
     padding-bottom: 5px;
+    line-height: 2;
 }
