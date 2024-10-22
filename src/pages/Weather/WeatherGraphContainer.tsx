@@ -59,8 +59,10 @@ export default function WeatherGraphContainer({ data, onIncrementDay, children }
             {date.toDateString()} - Max {getMax(data)}
             <input type='button' value='>' onClick={() => onIncrementDay(1)}/>
         </h2>
-        {children}
-        <input type='button' value='Filter' onClick={() => setFilterOpen(true)}/>
+        <div className='buttons'>
+            {children}
+            <input type='button' value='Filter' onClick={() => setFilterOpen(true)}/>
+        </div>
         <Modal opened={filterOpen} onClose={() => setFilterOpen(false)} styleOne>
             <div className='chart-filters'>
                 {

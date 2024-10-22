@@ -1,21 +1,39 @@
-img.selfie {
-    width: 40%;
-    float: right;
-    margin-left: 4%;
-    margin-bottom: 4%;
-    box-shadow: 0 0 6px 1px #444444;
+.home h1 {
+    text-align: center;
+    animation: fadein 0.2s;
+    margin-top: 60px;
 }
 
-@media screen and (max-width: 800px) {
+img.selfie {
+    width: min(50%, 500px);
+    float: right;
+    box-shadow: 0 0 6px 1px #444444;
+    animation: fadein 0.4s;
+    margin: 25px;
+}
+
+@media screen and (max-width: 1800px) {
     img.selfie {
         float: none;
         margin-left: auto;
         margin-right: auto;
         display: block;
-        width: 60%;
+    }
+    .home h1 {
+        margin-bottom: 0;
+    }
+}
+@media screen and (min-width: 1800px) {
+    .home h1 {
+        margin-bottom: 50px;
+    }
+    .home p {
+        padding-right: 30px;
+        margin-top: 90px;
     }
 }
 
-.home h1 {
-    text-align: center;
+.home p {
+    animation: fadein 0.6s;
+    padding-bottom: 5px;
 }

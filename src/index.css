@@ -23,6 +23,7 @@ a, a:visited {
 
 a, input[type=button] {
   background-color: rgba(0, 255, 255, 0.1);
+  padding: 5px;
 }
 
 a:hover {
@@ -53,6 +54,7 @@ input, input:active, input:focus {
 
 input[type=button] {
   border: 1px solid cyan;
+  border-radius: 8px;
 }
 
 input[type=number], input[type=text] {
@@ -86,6 +88,21 @@ label {
 }
 
 img.large {
-  border: 1px solid white;
   width: 100%;
 }
+
+/* animations */
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 

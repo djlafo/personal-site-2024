@@ -15,7 +15,7 @@ function HeaderBar() {
 			</div>
 			
 			<Modal opened={open} onClose={() => setOpen(false)} doOnKey={openOnEscFn(() => setOpen(true))}>
-				<nav className='link-list'>
+				<nav className='link-list' onClick={() => setOpen(false)}>
 					<span>
 						<Link to={'/'}>
 							Home

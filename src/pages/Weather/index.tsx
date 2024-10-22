@@ -109,7 +109,7 @@ function Weather() {
                 </div>
             </Modal>
             {
-                !weatherData.length && currentAttempt > 0 && ` Loading...attempt ${currentAttempt}`
+                !weatherData.length && currentAttempt > 0 && <span className='loading-text'>Loading...attempt ${currentAttempt}</span>
             }
             { 
                 (weatherData.length && 

@@ -14,7 +14,7 @@ function Interval() {
     }});
 
     return <Page>
-        <div>
+        <div className='interval-timer'>
             <h1>
                 Interval Timer
             </h1>

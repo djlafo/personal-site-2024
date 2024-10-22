@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Page from '../../components/Page';
+import { Page, GlowBackdrop } from '../../components';
 import './linux.css';
 
 const images = ['desk2.png', 'desk1.png', 'desk3.png', 'desk2-1.png', 'desk3-3.png', 'desk3-2.png'];
@@ -32,32 +32,36 @@ export default function Linux() {
 	}, [setActiveImage])
 
     return <Page>
-        <h2>
-            Themes
-        </h2>
-        <p>
-            Check out my custom desktop themes (Debian btw)<br/>
-            <br/>
-            I wrote a script and a SCSS template to generate a basic theme on the fly for the wallpaper, then add tweaks from there
-        </p>
+        <GlowBackdrop id='linux-ss-glow' deviation='20' saturation="20"/>
         <div className='linux'>
-            <div>
-                <input type='button' value='<' onClick={() => setActiveImage(a => increment(a, - 1))}/>
-                {activeImage+1} / {images.length} 
-                <input type='button' value='>' onClick={() => setActiveImage(a => increment(a, 1))}/>
+            <h2>
+                Themes
+            </h2>
+            <p>
+                Check out my custom desktop themes (Debian btw)<br/>
+                <br/>
+                I wrote a script and a SCSS template to generate a basic theme on the fly for the wallpaper, then add tweaks from there
+            </p>
+            <div className='image-display'>
+                <div>
+                    <input type='button' value='<' onClick={() => setActiveImage(a => increment(a, - 1))}/>
+                    {activeImage+1} / {images.length} 
+                    <input type='button' value='>' onClick={() => setActiveImage(a => increment(a, 1))}/>
+                </div>
+                <div className={imageLoading ? '' : 'loaded'}>
+                    <div className='loader'/>
+                </div>
+                <a href={`./${images[activeImage]}`} 
+                    hidden={imageLoading}
+                    target='_blank' 
+                    rel='noreferrer'>
+                        <img src={`./${images[activeImage]}`} 
+                            style={{filter: 'url(#linux-ss-glow)'}}
+                            alt='desktop' 
+                            className='large'
+                            onLoad={() => setImageLoading(false)}/>
+                </a>
             </div>
-            <div className={imageLoading ? '' : 'loaded'}>
-                <div className='loader'/>
-            </div>
-            <a href={`./${images[activeImage]}`} 
-                hidden={imageLoading}
-                target='_blank' 
-                rel='noreferrer'>
-                    <img src={`./${images[activeImage]}`} 
-                        alt='desktop' 
-                        className='large'
-                        onLoad={() => setImageLoading(false)}/>
-            </a>
         </div>
     </Page>;
 }

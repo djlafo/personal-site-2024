@@ -1,3 +1,7 @@
+.interval-timer {
+    animation: fadein 0.5s linear;
+}
+
 .round-list {
     display: flex;
     flex-wrap: wrap;
@@ -7,6 +11,7 @@
 .round-list > div {
     text-align: center;
     border: 1px solid cyan;
+    border-radius: 8px;
     margin: 15px;
     width: 200px;
 }
@@ -45,8 +50,9 @@
     align-items: center;
 }
 
-.round-buttons {
+.round-buttons > input {
     margin-left: 10px;
+    width: 25px;
 }
 
 .interval-insert-box {

@@ -1,17 +1,21 @@
 import React from 'react';
 
-import { Page } from '../../components';
+import { Page, GlowBackdrop } from '../../components';
 import Resume from '../../documents/Resume.pdf';
 import './home.css';
 
 function Home() {
     return <Page>
+        <GlowBackdrop id='selfie-glow' deviation='7'/>
         <div className='home'>
             <h1>
                 Hello, I'm Dylan Lafont
             </h1>
+            <img src='./selfie.jpg' 
+                style={{filter: 'url(#selfie-glow)'}}
+                className='selfie' 
+                alt='selfie'/>
             <p>
-                <img src='./selfie.jpg' className='selfie' alt='Self'/>
                 A while ago, I took a sabbatical from work to focus on long-term mental health issues that made normal life difficult for me, such as agoraphobia.
                 <br/>
                 <br/>

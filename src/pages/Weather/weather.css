@@ -5,19 +5,30 @@
     margin-right: auto;
 }
 
+.weather-page .loading-text {
+    animation-delay: 1s; 
+    animation: fadein .1s linear;
+}
+
 .weather-chart-container {
     width: 100%;
     height: 720px;
     overflow-x: scroll;
     overflow-y: visible;
+    animation: fadein .6s linear;
+}
+
+.weather-chart-container-container > h2 {
+    animation: fadein 0.2s ease-in;
 }
 
 .weather-chart-container-container {
     text-align: center;
 }
 
-.weather-chart-container-container > input {
-    margin: 0 10px 20px 10px;
+.weather-chart-container-container > .buttons > input {
+    margin: 0px 10px 20px 10px;
+    animation: fadein .4s linear;
 }
 
 .weather-chart-container-container .chart-filters {

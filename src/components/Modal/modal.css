@@ -1,10 +1,16 @@
 .modal-parent:not(.opened) {
-    display: none;
+    visibility:hidden;
+    opacity: 0;
+    transition: visibility 0.3s, opacity 0.3s;
 }
 
 .modal-parent.opened {
     position: fixed;
     z-index: 50;
+
+    visibility: visible;
+    opacity: 1;
+    transition: visible 0.3s, opacity 0.3s;
 }
 
 .modal-background {
@@ -20,10 +26,10 @@
 .modal-content {
     z-index: 52;
     position: fixed;
-    top: 50%;
+    top: 5%;
     left: 50%;
-    transform: translate(-50%, -50%);
-    max-height: 80%;
+    transform: translate(-50%, 0%);
+    max-height: 85%;
     max-width: 80%;
     overflow-y: scroll;
 }
