@@ -25,16 +25,20 @@ import './weather.css';
 /* COMPONENT */
 export default function Weather() {
     const [settingsOpened, setSettingsOpened] = useState(false);
+    const [settingsCloseFlag, setSettingsCloseFlag] = useState(false);
     const [zip,coords,locationHandler] = useLocationHandler(e => {
         toast(e.message);
     });
 
     if ((!zip || !coords) && !settingsOpened) {
         setSettingsOpened(true);
+    } else if (zip && coords && settingsOpened && settingsCloseFlag) {
+        setSettingsCloseFlag(false);
+        setSettingsOpened(false);
     }
 
     const locationHandlerProx = (ld: LocationData) => {
-        setSettingsOpened(false);
+        setSettingsCloseFlag(true);
         locationHandler(ld);
     }
 

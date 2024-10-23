@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { LocationDataFn, LocationTypes } from './types';
+import { LocationDataFn } from './types';
 import { getBrowserCoordinates } from '../../../helpers/location';
 
 import { toast } from 'react-toastify';
@@ -32,20 +32,12 @@ export default function SettingsInputs({zip, coords, onLocationChange} : Setting
         setLocating(true);
         getBrowserCoordinates().then(c => {
             setCoords(c);
-            toast('Obtained coordinates from browser');
+            onLocationChange({coords: c});
         }).catch(e => {
             toast(e.message || e);
         }).finally(() => {
             setLocating(false);
         });
-    };
-
-    const getBy = (lt : LocationTypes) => {
-        if(lt === LocationTypes.ZIP) {
-            onLocationChange({zip: _zip});
-        } else {
-            onLocationChange({coords: _coords});
-        }
     };
 
     return (
@@ -60,11 +52,11 @@ export default function SettingsInputs({zip, coords, onLocationChange} : Setting
             <div className='buttons'>
                 <input type='button' 
                     value='Get by ZIP' 
-                    onClick={() => getBy(LocationTypes.ZIP)}
+                    onClick={() => onLocationChange({zip: _zip})}
                     readOnly={locating}/>
                 <input type='button' 
                     value='Get by Coordinates' 
-                    onClick={() => getBy(LocationTypes.Coordinates)}
+                    onClick={() => onLocationChange({coords: _coords})}
                     readOnly={locating}/>
                 <input type='button' 
                     value={locating ? 'Trying to grab coordinates...' : 'Autoget Coordinates'} 

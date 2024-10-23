@@ -37,7 +37,7 @@ export default function useLocationHandler(err ?: errorHandler) : locationReturn
         grabOther(ld).then(ldFull => {
             setZip(ldFull.zip);
             setCoords(ldFull.coords);
-        }).catch(e => err && err(e));
+        }).catch(e => err && err());
     }
 
     if(zip && coords) {
