@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import useLocationHandler from './LocationHandler';
 
 /* 3rd PARTY COMPONENTS */
 import { ToastContainer, toast } from 'react-toastify';
@@ -10,7 +11,8 @@ import { Modal, Page } from '../../components';
 /* SETTINGS */
 import WeatherSettings from './WeatherSettings';
 
-import useLocationHandler from './LocationHandler';
+/* TYPES */
+import { LocationData } from './WeatherSettings/types';
 
 /* WEATHER */
 import WeeklyWeather from './WeeklyWeather';
@@ -27,10 +29,13 @@ export default function Weather() {
         toast(e.message);
     });
 
-    if(zip && coords && settingsOpened) {
-        setSettingsOpened(false);
-    } else if ((!zip || !coords) && !settingsOpened) {
+    if ((!zip || !coords) && !settingsOpened) {
         setSettingsOpened(true);
+    }
+
+    const locationHandlerProx = (ld: LocationData) => {
+        setSettingsOpened(false);
+        locationHandler(ld);
     }
 
     return <Page>
@@ -41,7 +46,7 @@ export default function Weather() {
                 opened={settingsOpened}>
                 <WeatherSettings zip={zip} 
                     coords={coords} 
-                    onLocationChange={locationHandler}/>
+                    onLocationChange={locationHandlerProx}/>
             </Modal>
 
             <WeeklyWeather zip={zip} coords={coords}/>
