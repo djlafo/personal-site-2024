@@ -1,73 +1,16 @@
-.weather-chart {
-    width: 1200px;
-    height: 700px;
+.weather > input {
+    display: block;
     margin-left: auto;
     margin-right: auto;
-}
-
-.weather-page .loading-text {
-    animation-delay: 1s; 
-    animation: fadein .1s linear;
-}
-
-.weather-chart-container {
-    width: 100%;
-    height: 720px;
-    overflow-x: scroll;
-    overflow-y: visible;
-    animation: fadein .6s linear;
-}
-
-.weather-chart-container-container > h2 {
-    animation: fadein 0.2s ease-in;
-}
-
-.weather-chart-container-container {
-    text-align: center;
-}
-
-.weather-chart-container-container > .buttons > input {
-    margin: 0px 10px 20px 10px;
-    animation: fadein .4s linear;
-}
-
-.weather-chart-container-container .chart-filters {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    height: 250px;
-    align-items: flex-start;
-}
-
-.weather-chart-container-container > h2 {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.weather-chart-container-container > h2 > input {
-    margin: 0 30px;
-}
-
-.weather-graph-tooltip {
-    background: #FFFFFF;
-    color: #000000;
-    font-size: 14pt;
-    padding: 5px;
-    text-align: left;
-}
-
-.weather-page .settings-box input[type=textbox] {
-    margin: 5px 0;
-}
-
-.weather-input-buttons {
     margin-top: 20px;
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    animation: fadein .6s ease-in;
 }
 
-.weather-input-buttons > input {
-    margin: 10px 10px;
+.weekly-weather .day-switcher {
+    animation: fadein .2s ease-in;
 }
+
+.weekly-weather .graph-container {
+    animation: fadein .4s ease-in;
+}
+

@@ -1,7 +1,25 @@
-// ../../documents/uszips
-
 import Papa from 'papaparse';
 
+/* BROWSER BASED LOCATION */
+export async function getBrowserCoordinates() : Promise<string> {
+    return new Promise((acc, rej) => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(p => {
+                acc(`${p.coords.latitude},${p.coords.longitude}`);
+            }, e => {
+                rej(e.message);
+            }, {
+                maximumAge: 60000,
+                timeout: 5000,
+                enableHighAccuracy: false
+            });
+        } else {
+            rej(new Error('Geolocation not available'));
+        }
+    });
+};
+
+/* TRANSLATION TO/FROM ZIP/COORDS */
 interface CsvRow {
     zip: string;
     lat: string;
@@ -23,10 +41,11 @@ async function getCsv() : Promise<Papa.ParseResult<CsvRow>> {
     });
 }
 
-export async function getZipFromCoords(lat: number, long: number) : Promise<string> {
+export async function getZipFromCoords(coords : string) : Promise<string> {
     return new Promise((acc, rej) => {
         (async() => {
             try {
+                const [lat, long] = coords.split(',').map(s => Number(s));
                 const csv = await getCsv();
                 const closest = csv.data.reduce((d, c) => {
                     if(!d) return c;
@@ -51,7 +70,7 @@ export async function getCoordsFromZip(zip: string) : Promise<string> {
                 if(row) {
                     acc(`${row.lat},${row.lng}`);
                 } else {
-                    rej({message: 'ZIP not found'});
+                    rej(new Error('ZIP not found'));
                 }
             } catch (e) {
                 rej(e);
@@ -60,6 +79,7 @@ export async function getCoordsFromZip(zip: string) : Promise<string> {
     });
 }
 
+/* HELPER FUNCTIONS */
 function deg2rad(deg : number) : number {
     return deg * (Math.PI/180)
 }

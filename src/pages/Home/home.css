@@ -1,13 +1,13 @@
 .home h1 {
     text-align: center;
-    animation: fadein 0.2s;
+    animation: fadein 0.2s ease-in;
 }
 
 img.selfie {
     width: min(50%, 500px);
     float: right;
     box-shadow: 0 0 6px 1px #444444;
-    animation: fadein 0.4s;
+    animation: fadein 0.4s ease-in;
     margin: 25px;
 }
 
@@ -35,7 +35,7 @@ img.selfie {
 }
 
 .home p {
-    animation: fadein 0.6s;
+    animation: fadein 0.6s ease-in;
     padding-bottom: 5px;
     line-height: 2;
 }

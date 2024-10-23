@@ -1,0 +1,13 @@
+.graph-container {
+    width: 100%;
+    height: 720px;
+    overflow-x: scroll;
+    overflow-y: visible;
+}
+
+.day-switcher {
+    text-align: center;
+}
+.day-switcher input {
+    margin: 5px 10px;
+}
