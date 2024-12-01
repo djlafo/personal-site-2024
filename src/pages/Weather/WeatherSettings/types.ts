@@ -9,8 +9,3 @@ export interface LocationDataReq {
 }
 
 export type LocationDataFn = ({zip, coords} : LocationData) => void;
-
-export enum LocationTypes {
-    ZIP,
-    Coordinates
-}

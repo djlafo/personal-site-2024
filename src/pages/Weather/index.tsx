@@ -24,22 +24,13 @@ import './weather.css';
 
 /* COMPONENT */
 export default function Weather() {
-    const [settingsOpened, setSettingsOpened] = useState(false);
-    const [settingsCloseFlag, setSettingsCloseFlag] = useState(false);
-    const [zip,coords,locationHandler] = useLocationHandler(e => {
-        toast(e.message);
-    });
+    const [zip,coords,locationHandler] = useLocationHandler();
+    const [settingsOpened, setSettingsOpened] = useState(!zip && !coords);
 
-    if ((!zip || !coords) && !settingsOpened) {
-        setSettingsOpened(true);
-    } else if (zip && coords && settingsOpened && settingsCloseFlag) {
-        setSettingsCloseFlag(false);
-        setSettingsOpened(false);
-    }
-
-    const locationHandlerProx = (ld: LocationData) => {
-        setSettingsCloseFlag(true);
-        locationHandler(ld);
+    const locationHandlerProx = (ld : LocationData) => {
+        locationHandler(ld).then(() => {
+            setSettingsOpened(false);
+        }).catch(e => toast(e.message));
     }
 
     return <Page>

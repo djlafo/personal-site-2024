@@ -17,6 +17,7 @@ const Tooltip : SliceTooltip = (point) => {
         if(['Humidity', 'Rain Chance'].includes(label)) data = `${data}%`;
         if(label === 'Wind Speed') data = `${data}mph`;
         if(label === 'Temperature') data = `${data}F`;
+        if(label === 'UV Index') data = data/10;
 
         return {label: label, data: data};
     });

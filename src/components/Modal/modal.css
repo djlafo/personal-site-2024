@@ -31,7 +31,7 @@
     transform: translate(-50%, 0%);
     max-height: 85%;
     max-width: 80%;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 
 .modal-content.style-one {

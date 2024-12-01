@@ -26,18 +26,17 @@ const getParam = (s : string) => {
 }
 
 
-type locationReturn = [string, string, (ld: LocationData) => void];
-type errorHandler = (e: Error) => void;
+type locationReturn = [string | undefined, string | undefined, (ld: LocationData) => Promise<void>];
 
-export default function useLocationHandler(err ?: errorHandler) : locationReturn {
+export default function useLocationHandler() : locationReturn {
     const [zip, setZip] = useState(getParam('zip'));
     const [coords, setCoords] = useState(getParam('coords'));
 
     const setLocation = (ld : LocationData) => {
-        grabOther(ld).then(ldFull => {
+        return grabOther(ld).then(ldFull => {
             setZip(ldFull.zip);
             setCoords(ldFull.coords);
-        }).catch(e => err && err());
+        });
     }
 
     if(zip && coords) {
