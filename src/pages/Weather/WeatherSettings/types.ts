@@ -1,6 +1,7 @@
 export interface LocationData {
     zip?: string;
     coords?: string;
+    auto?: boolean;
 }
 
 export interface LocationDataReq {
@@ -8,4 +9,4 @@ export interface LocationDataReq {
     coords: string;
 }
 
-export type LocationDataFn = ({zip, coords} : LocationData) => void;
+export type LocationDataFn = ({zip, coords, auto} : LocationData) => void;

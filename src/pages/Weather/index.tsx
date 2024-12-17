@@ -26,11 +26,22 @@ import './weather.css';
 export default function Weather() {
     const [zip,coords,locationHandler] = useLocationHandler();
     const [settingsOpened, setSettingsOpened] = useState(!zip && !coords);
+    const [loading, setLoading] = useState(false);
+    const [errorMessages, setErrorMessages] = useState('');
 
     const locationHandlerProx = (ld : LocationData) => {
-        locationHandler(ld).then(() => {
+        setLoading(true);
+        locationHandler(ld).then((ldTwo : LocationData) => {
+            toast(`Loading ${ldTwo.zip}...`);
             setSettingsOpened(false);
-        }).catch(e => toast(e.message));
+        }).catch(e => {
+            showError(e);
+        }).finally(() => setLoading(false));
+    }
+
+    const showError = (e : any) => {
+        setErrorMessages(em => `${em}${e.message || e}\n${e.stack}\n\n`);
+        toast(e.message || e);
     }
 
     return <Page>
@@ -41,14 +52,17 @@ export default function Weather() {
                 opened={settingsOpened}>
                 <WeatherSettings zip={zip} 
                     coords={coords} 
-                    onLocationChange={locationHandlerProx}/>
+                    onLocationChange={locationHandlerProx}
+                    readOnly={loading}/>
             </Modal>
 
-            <WeeklyWeather zip={zip} coords={coords}/>
+            <WeeklyWeather zip={zip} coords={coords} onError={showError}/>
 
             <input type='button' 
                 value='Settings'
                 onClick={() => setSettingsOpened(true)}/>
+
+            {errorMessages && <textarea readOnly rows={7} value={errorMessages}/>}
         </div>
     </Page>;
 }

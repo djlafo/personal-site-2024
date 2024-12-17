@@ -14,3 +14,9 @@
     animation: fadein .4s ease-in;
 }
 
+.weather textarea {
+    width: 100%;
+    background-color: #000000;
+    color: #FFFFFF;
+    margin-top: 15px;
+}

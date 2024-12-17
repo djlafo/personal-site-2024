@@ -3,14 +3,14 @@ import { UVAPIData, WeatherAPIData, WeatherPeriods, WeatherData } from "./types"
 const coordinateURL = (coord : string) => `https://api.weather.gov/points/${coord}`;
 const uvURL = (zip: string) => `https://data.epa.gov/efservice/getEnvirofactsUVHOURLY/ZIP/${zip}/JSON`;
 
-export async function getWeather(zip : string, coord : string): Promise<Array<WeatherData>> {
+export async function getWeather(zip : string, coord : string, cache=false): Promise<Array<WeatherData>> {
     return new Promise((acc, rej) => {
         (async() => {
             try {
                 const uvProm = apiFetch<Array<UVAPIData>>({
                     storageKey: `uv${zip}`,
                     api: uvURL(zip)
-                });
+                }, cache);
 
                 const coordResp = await fetch(coordinateURL(coord.replaceAll(' ', '')));
                 if(!coordResp.ok) throw new Error(`${coordResp.url}: ${coordResp.statusText}`, { cause: coordResp });
@@ -20,7 +20,7 @@ export async function getWeather(zip : string, coord : string): Promise<Array<We
                 const weatherJson : WeatherAPIData = await apiFetch<WeatherAPIData>({
                     storageKey: `weather${zip}`,
                     api: hourlyURL
-                });
+                }, cache);
                 const uvJson : Array<UVAPIData> = await uvProm;
 
                 const dataPoints : Array<WeatherPeriods> = weatherJson.properties.periods;
@@ -86,19 +86,23 @@ type common = {
     api: string;
 };
 
-const apiFetch = async function<T>(f : common) : Promise<T> {
+const apiFetch = async function<T>(f : common, cache = false) : Promise<T> {
     return new Promise((acc,rej) => {
         (async() => {
             try {
-                const storage = localStorage.getItem(f.storageKey);
-                const date = localStorage.getItem(`${f.storageKey}Date`);
+                const storage = cache && localStorage.getItem(f.storageKey); 
+                const date = cache && localStorage.getItem(`${f.storageKey}Date`);
                 let tJson : T;
                 if(storage && date && new Date(date) > new Date()) {
                     tJson = JSON.parse(storage);
                 } else {
                     const response: Response = await fetch(f.api);
-                    if(!response.ok) throw new Error(`${response.url}: ${response.statusText}`, { cause: response });
-                    tJson = await response.json();
+                    if(!response.ok) {
+                        const text = await response.text();
+                        throw new Error(`${response.status}:${text}`);
+                    } else {
+                        tJson = await response.json();
+                    }
                 }
                 const hourAhead = new Date(new Date().setHours(new Date().getHours() + 1)).toUTCString();
                 localStorage.setItem(f.storageKey, JSON.stringify(tJson));

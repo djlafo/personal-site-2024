@@ -8,7 +8,7 @@ import { formatWeatherData, FormattedWeatherData } from "../WeatherGraph/helpers
 
 import './weeklyweather.css';
 
-export default function WeeklyWeather({zip, coords} : {zip?: string, coords?: string}) {
+export default function WeeklyWeather({zip, coords, onError} : {zip?: string, coords?: string, onError: (e:any) => void}) {
     const [lastZip, setLastZip] = useState<string>();
     const [lastCoords, setLastCoords] = useState<string>();
     const [weekWeatherData, setWeekWeatherData] = useState<FormattedWeatherData>();
@@ -21,13 +21,13 @@ export default function WeeklyWeather({zip, coords} : {zip?: string, coords?: st
 
     useEffect(() => {
         if(zip && coords) {
-            getWeather(zip, coords).then(wd => {
+            getWeather(zip, coords, true).then(wd => {
                 const formatted = formatWeatherData(wd);
                 setCurrentDay(Object.keys(formatted)[0]);
                 setWeekWeatherData(formatted);
-            });
+            }).catch(e => onError(e));
         }
-    }, [zip,coords])
+    }, [zip,coords,onError])
 
     if(weekWeatherData && currentDay) {
         return <div className='weekly-weather'>
