@@ -3,6 +3,12 @@
     animation: fadein 0.2s ease-in;
 }
 
+.home {
+    max-width: 2000px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 img.selfie {
     width: min(50%, 500px);
     float: right;

@@ -6,7 +6,9 @@ const uvURL = (zip: string) => `https://data.epa.gov/efservice/getEnvirofactsUVH
 export async function getWeather(zip : string, coord : string, cache=false): Promise<Array<WeatherData>> {
     return new Promise((acc, rej) => {
         (async() => {
+            let currentApi = '';
             try {
+                currentApi = uvURL(zip);
                 const uvProm = apiFetch<Array<UVAPIData>>({
                     storageKey: `uv${zip}`,
                     api: uvURL(zip)
@@ -17,6 +19,7 @@ export async function getWeather(zip : string, coord : string, cache=false): Pro
                 const coordJson = await coordResp.json();
                 const hourlyURL = coordJson.properties.forecastHourly;
 
+                currentApi = hourlyURL;
                 const weatherJson : WeatherAPIData = await apiFetch<WeatherAPIData>({
                     storageKey: `weather${zip}`,
                     api: hourlyURL
@@ -30,19 +33,19 @@ export async function getWeather(zip : string, coord : string, cache=false): Pro
                         time: date,
                         temp: e.temperature,
                         tempUnit: e.temperatureUnit,
-                        humidity: e.relativeHumidity.value,
+                        humidity: e.relativeHumidity?.value,
                         rainChance: e.probabilityOfPrecipitation.value,
                         windSpeed: e.windSpeed,
                         desc: e.shortForecast,
                         icon: e.icon,
                         uv: findUV(uvJson, date)?.UV_VALUE,
-                        heatIndex: calcHeatIndex(e.temperature, e.relativeHumidity.value),
-                        wetBulb: calcWetBulb(e.temperature, e.relativeHumidity.value)
+                        heatIndex: e.relativeHumidity && calcHeatIndex(e.temperature, e.relativeHumidity.value),
+                        wetBulb: e.relativeHumidity && calcWetBulb(e.temperature, e.relativeHumidity.value)
                     };
                 });
                 acc(data);
             } catch(e) {
-                rej(e);
+                rej({error: e, string: `API: ${currentApi}`});
             }
         })();
     });

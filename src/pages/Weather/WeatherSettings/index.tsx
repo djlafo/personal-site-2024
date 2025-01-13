@@ -1,13 +1,76 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 
-import { LocationDataFn } from './types';
+import { LocationContext, LocationData } from './../LocationHandler';
+
+import { Modal } from '../../../components';
 
 
 interface WeatherSettingsTypes {
-    zip?: string;
-    coords?: string;
-    onLocationChange: LocationDataFn;
-    readOnly?: boolean;
+    autoOpen?: boolean;
+}
+
+export default function WeatherSettings({autoOpen=true} : WeatherSettingsTypes) {
+    const {zip, coords, setLocation, setLogs} = useContext(LocationContext);
+    const [zipField, setZipField] = useState(zip);
+    const [coordsField, setCoordsField] = useState(coords);
+    const [loading, setLoading] = useState(false);
+    const [settingsOpened, setSettingsOpened] = useState(autoOpen && (!zip || !coords));
+
+    const _setLocation = (ld : LocationData) => {
+        setLoading(true);
+        setLogs && setLogs(a => a.concat([{
+            string: `Loading full location for:
+            zip:${ld.zip}
+            coords:${ld.coords}
+            autograb:${ld.auto || false}`
+        }]));
+        setLocation && setLocation(ld).then(ldTwo => {
+            setLogs && setLogs(a => a.concat([{
+                string: `Loaded location:
+                zip:${ldTwo.zip}
+                coords:${ldTwo.coords}`
+            }]));
+            setZipField(ldTwo.zip);
+            setCoordsField(ldTwo.coords);
+            setSettingsOpened(false);
+        }).catch(_ => {}).finally(() => setLoading(false));
+    };
+
+    return <>
+        <input type='button' 
+            value='Settings'
+            onClick={() => setSettingsOpened(true)}/>
+        <Modal onClose={() => setSettingsOpened(false)} 
+            styleOne
+            opened={settingsOpened}>
+            <div className='settings'>
+                <PopupInfo/>
+                <div className='inputs'>
+                    <div>
+                        ZIP: <input type='textbox' value={zipField} onChange={e => setZipField(e.target.value)}/>
+                    </div>
+                    <div>
+                        Coordinates: <input type='textbox' value={coordsField} onChange={e => setCoordsField(e.target.value)}/>
+                    </div>
+                    <br/>
+                    <div className='buttons'>
+                        <input type='button' 
+                            value='Get by ZIP' 
+                            onClick={() => _setLocation({zip: zipField})}
+                            readOnly={loading}/>
+                        <input type='button' 
+                            value='Get by Coordinates' 
+                            onClick={() => _setLocation({coords: coordsField})}
+                            readOnly={loading}/>
+                        <input type='button' 
+                            value={'Autoget Coordinates'} 
+                            onClick={() => _setLocation({auto: true})} 
+                            readOnly={loading}/>
+                    </div>
+                </div>
+            </div>
+        </Modal>
+    </>;
 }
 
 const PopupInfo = () => <>
@@ -24,45 +87,3 @@ const PopupInfo = () => <>
         80-100 very high<br/>
     </p>
 </>;
-
-export default function WeatherSettings({onLocationChange, zip, coords, readOnly} : WeatherSettingsTypes) {
-    const [lastZip, setLastZip] = useState(zip);
-    const [lastCoords, setLastCoords] = useState(coords);
-    const [_zip, setZip] = useState(zip || '');
-    const [_coords, setCoords] = useState(coords || '');
-    if(zip !== lastZip) {
-        setLastZip(zip);
-        setZip(zip || '');
-    }
-    if(coords && coords !== lastCoords) {
-        setLastCoords(coords);
-        setCoords(coords || '');
-    }
-
-    return <div className='settings'>
-        <PopupInfo/>
-        <div className='inputs'>
-            <div>
-                ZIP: <input type='textbox' value={_zip} onChange={e => setZip(e.target.value)}/>
-            </div>
-            <div>
-                Coordinates: <input type='textbox' value={_coords} onChange={e => setCoords(e.target.value)}/>
-            </div>
-            <br/>
-            <div className='buttons'>
-                <input type='button' 
-                    value='Get by ZIP' 
-                    onClick={() => onLocationChange({zip: _zip})}
-                    readOnly={readOnly}/>
-                <input type='button' 
-                    value='Get by Coordinates' 
-                    onClick={() => onLocationChange({coords: _coords})}
-                    readOnly={readOnly}/>
-                <input type='button' 
-                    value={'Autoget Coordinates'} 
-                    onClick={() => onLocationChange({auto: true})} 
-                    readOnly={readOnly}/>
-            </div>
-        </div>
-    </div>;
-}

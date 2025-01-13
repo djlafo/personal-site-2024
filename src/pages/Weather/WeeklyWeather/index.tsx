@@ -1,23 +1,19 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import WeatherGraph from "../WeatherGraph";
 import DaySwitcher from "./DaySwitcher";
 
 import { getWeather } from "../WeatherApi";
 import { formatWeatherData, FormattedWeatherData } from "../WeatherGraph/helpersAndTypes";
+import { LocationContext } from "../LocationHandler";
 
 import './weeklyweather.css';
 
-export default function WeeklyWeather({zip, coords, onError} : {zip?: string, coords?: string, onError: (e:any) => void}) {
-    const [lastZip, setLastZip] = useState<string>();
-    const [lastCoords, setLastCoords] = useState<string>();
+export default function WeeklyWeather() {
+    const {zip, coords, setLogs} = useContext(LocationContext);
     const [weekWeatherData, setWeekWeatherData] = useState<FormattedWeatherData>();
     const [currentDay, setCurrentDay] = useState<string>();
     
-    if(zip && coords && (lastZip !== zip || lastCoords !== coords)) {
-        setLastZip(zip);
-        setLastCoords(coords);
-    }
 
     useEffect(() => {
         if(zip && coords) {
@@ -25,9 +21,14 @@ export default function WeeklyWeather({zip, coords, onError} : {zip?: string, co
                 const formatted = formatWeatherData(wd);
                 setCurrentDay(Object.keys(formatted)[0]);
                 setWeekWeatherData(formatted);
-            }).catch(e => onError(e));
+            }).catch(e => {
+                setLogs && setLogs(a => a.concat([{
+                    error: e.error,
+                    string: e.string
+                }]));
+            });
         }
-    }, [zip,coords,onError])
+    }, [zip,coords, setLogs])
 
     if(weekWeatherData && currentDay) {
         return <div className='weekly-weather'>
