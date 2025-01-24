@@ -60,7 +60,7 @@ const findUV = (a : Array<UVAPIData>, d : Date) => {
         let timeTwentyFour = Number(time[0]);
         if(time[1] === 'PM' && time[0] !== '12') {
             timeTwentyFour = timeTwentyFour + 12;
-        } else if(time[0] === '12') {
+        } else if(time[1] === 'AM' && time[0] === '12') {
             timeTwentyFour = 0;
         }
         return (d.getDate() === day && d.getHours() === timeTwentyFour);
