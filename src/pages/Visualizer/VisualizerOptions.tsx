@@ -6,29 +6,32 @@ export interface VisualizerOptionsType {
     fps: number;
     shuffleTimer: number;
     lock: boolean;
-    shuffleCounter: number;
+    canvas?: HTMLCanvasElement | null
 }
 
-export default function VisualizerOptions({onUpdate} : {onUpdate : (o : VisualizerOptionsType) => void}) {
+interface VisualizerOptionsOptions { // lol
+    onStart: (o: VisualizerOptionsType) => void;
+    onShuffle: () => void;
+    onLock: (b: boolean) => void;
+}
+
+export default function VisualizerOptions(o : VisualizerOptionsOptions) {
     const [width, setWidth] = useState('1600');
     const [height, setHeight] = useState('900');
     const [fps, setFps] = useState('30');
     const [shuffleTimer, setShuffleTimer] = useState('15');
     const [lock, setLock] = useState(false);
-    const [shuffleCounter, setShuffleCounter] = useState(0);
 
     const [started, setStarted] = useState(false);
 
-    const update = (o : { lock ?: boolean, shuffleCounter?: number}) => {
-        const current = {
+    const start = () => {
+        o.onStart({
             width: Number(width) || 1600,
             height: Number(height) || 900,
             fps: Number(fps) || 30,
             shuffleTimer: Number(shuffleTimer) || 15,
-            lock: lock,
-            shuffleCounter: shuffleCounter
-        };
-        onUpdate({...current, ...o});
+            lock: lock
+        });
         setStarted(true);
 
         if(!Number(width)) setWidth('1600');
@@ -53,18 +56,15 @@ export default function VisualizerOptions({onUpdate} : {onUpdate : (o : Visualiz
         </div>
         <div>
             <label htmlFor='lockInput'>Lock: </label>
-            <input type='checkbox' id="lockInput" value={shuffleTimer} onChange={e => {
-                update({lock: e.target.checked});
+            <input type='checkbox' id="lockInput" onChange={e => {
+                o.onLock(e.target.checked);
                 setLock(e.target.checked);
             }}/>
         </div>
 
         <div>
-            <input type='button' value={started ? 'Restart' : 'Start'} onClick={() => update()}/>
-            {started && <input type='button' value='Shuffle' onClick={() => {
-                update({shuffleCounter: shuffleCounter + 1});
-                setShuffleCounter(shuffleCounter + 1);
-            }}/>}
+            <input type='button' value={started ? 'Restart' : 'Start'} onClick={() => start()}/>
+            {started && <input type='button' value='Shuffle' onClick={() => o.onShuffle()}/>}
             <br/><br/>
             {started && <>Click canvas to take up browser content</>}
         </div>
