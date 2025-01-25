@@ -36,6 +36,11 @@ function HeaderBar() {
 							Weather
 						</Link>
 					</span>
+					<span>
+						<Link to={'/Visualizer'}>
+							Music Visualizer
+						</Link>
+					</span>
 					<div className='link-divider'/>
 					<span>
 						<a href='mailto:djlafo@gmail.com'>djlafo@gmail.com</a>

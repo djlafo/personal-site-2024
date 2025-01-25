@@ -3,5 +3,6 @@ import Error from './Error';
 import Interval from './Interval';
 import Weather from './Weather';
 import Linux from './Linux';
+import Visualizer from './Visualizer';
 
-export { Home, Error, Interval, Weather, Linux };
+export { Home, Error, Interval, Weather, Linux, Visualizer };

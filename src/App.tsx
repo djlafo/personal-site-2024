@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import { Home, Error, Interval, Weather, Linux } from './pages';
+import { Home, Error, Interval, Weather, Linux, Visualizer } from './pages';
 
 function App() {
   const router = createBrowserRouter([
@@ -22,6 +22,10 @@ function App() {
       path: '/Linux',
       element: <Linux/>
     },
+    {
+      path: '/Visualizer',
+      element: <Visualizer/>
+    }
   ]);
 
   return (
