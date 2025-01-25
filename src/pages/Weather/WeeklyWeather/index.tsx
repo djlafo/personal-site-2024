@@ -39,5 +39,7 @@ export default function WeeklyWeather() {
                 <WeatherGraph data={weekWeatherData[currentDay as keyof FormattedWeatherData]}/>
             </div>
         </div>;
+    } else if (!weekWeatherData && zip && coords) {
+        return <div className='day-switcher'>Fetching data...</div>
     }
 }
