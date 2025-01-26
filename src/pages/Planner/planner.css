@@ -1,19 +1,25 @@
-.planner form input[type=number], .planner form input[type=text] {
-    display: block;
-    margin-bottom: 25px;
-}
-
-.planner form .form-buttons input {
+.planner .buttons input {
     margin: 0 10px;
 }
 
-.planner .task-list input {
-    margin-bottom: 10px;
+.planner .buttons {
+    display: flex;
+    margin-bottom: 25px;
 }
 
+.planner textarea {
+    resize:vertical;
+}
+
+/* TABLE */
 .planner .task-list td {
     text-align: center;
     vertical-align: middle;
+    padding: 0 15px;
+}
+
+.planner .task-list table, .planner .task-list table input, .task-list table textarea {
+    width: 100%;
 }
 
 .planner .task-list th {

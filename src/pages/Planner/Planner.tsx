@@ -4,6 +4,7 @@ export interface Task {
     label : string;
     motivation: number;
     necessity: number;
+    UUID: number;
 }
 interface UsePlannerReturn {
     tasks : Array<Task>;
@@ -16,16 +17,9 @@ export default function usePlanner() {
     const [tasks, _setTasks] = useState<Array<Task>>([]);
 
     const addTask = (t : Task) => {
-        const dupe = tasks.find(tt => {
-            return (tt.label === t.label)
+        _setTasks(ta => {
+            return ta.concat([t]);
         });
-        if(dupe) {
-            alert('Duplicate labels not allowed');
-        } else {
-            _setTasks(ta => {
-                return ta.concat([t]);
-            });
-        }
     };
 
     const removeTask = (t : Task) => {
