@@ -8,14 +8,25 @@
 }
 
 .planner textarea {
-    resize:vertical;
+    overflow: hidden;
+    resize: none;
+    height: auto;
 }
 
 /* TABLE */
 .planner .task-list td {
     text-align: center;
     vertical-align: middle;
-    padding: 0 15px;
+    padding: 5px 15px;
+}
+
+.planner .task-list td:nth-child(2), .planner .task-list th:nth-child(2),
+.planner .task-list td:nth-child(3), .planner .task-list th:nth-child(3) {
+    width: 130px;
+}
+
+.planner .task-list td:nth-child(4), .planner .task-list th:nth-child(4) {
+    width: 30px;
 }
 
 .planner .task-list table, .planner .task-list table input, .task-list table textarea {

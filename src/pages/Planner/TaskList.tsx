@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Task } from "./Planner";
 
 interface TaskListProps {
@@ -39,7 +39,7 @@ export default function TaskList(props : TaskListProps) {
     const addRow = () => {
         props.onUpdate(props.tasks.concat([{
             UUID: newID,
-            label: `Task ${props.tasks.length + 1}`,
+            label: '',
             motivation: 0,
             necessity: 0
         }]));
@@ -69,33 +69,49 @@ export default function TaskList(props : TaskListProps) {
         }));
     }
 
+    // hack to resize on initial load, i apologize for this
+    useEffect(() => {
+        setTimeout(() => {
+            document.querySelectorAll("textarea").forEach(textarea => {
+                textarea.style.height = 'auto'
+                textarea.style.height = textarea.scrollHeight + "px";
+            });
+        }, 50);
+    }, [taskCopy]);
+
     return <div className='task-list'>
         <div className='buttons'>
-            <input type='button' value='Add' onClick={() => addRow()}/>
             {props.children}
         </div>
         {(props.tasks.length && 
             <table>
                 <thead>
-                    <th>
-                        Label
-                    </th>
-                    <th>
-                        Motivation
-                    </th>
-                    <th>
-                        Necessity
-                    </th>
-                    <th></th>
+                    <tr>
+                        <th>
+                            Label
+                        </th>
+                        <th>
+                            Motivation
+                        </th>
+                        <th>
+                            Necessity
+                        </th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                     {taskCopy && taskCopy.map((t, i)=> {
                         return <tr key={t.UUID}>
                             <td>
-                                <textarea rows='1'
+                                <textarea rows={1}
+                                    autoFocus={i === taskCopy.length - 1}
                                     value={t.label} 
-                                    onChange={e => updateRow(i, {label: e.target.value})}
-                                    onBlur={() => updateTasks(i)}/>
+                                    onChange={e => {
+                                        updateRow(i, {label: e.target.value});
+                                        e.target.style.height = 'auto';
+                                        e.target.style.height = `${e.target.scrollHeight}px`;
+                                    }}
+                                    onBlur={() => updateTasks()}/>
                             </td>
                             <td>
                                 <input type='number' 
@@ -123,5 +139,6 @@ export default function TaskList(props : TaskListProps) {
             || 
             <></>
         }
+        <input type='button' value='Add' onClick={() => addRow()}/>
     </div>;
 }
