@@ -41,6 +41,11 @@ function HeaderBar() {
 							Music Visualizer
 						</Link>
 					</span>
+					<span>
+						<Link to={'/Planner'}>
+							Daily Planner
+						</Link>
+					</span>
 					<div className='link-divider'/>
 					<span>
 						<a href='mailto:djlafo@gmail.com'>djlafo@gmail.com</a>

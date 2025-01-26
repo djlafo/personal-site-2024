@@ -1,0 +1,25 @@
+.planner form input[type=number], .planner form input[type=text] {
+    display: block;
+    margin-bottom: 25px;
+}
+
+.planner form .form-buttons input {
+    margin: 0 10px;
+}
+
+.planner .task-list input {
+    margin-bottom: 10px;
+}
+
+.planner .task-list td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.planner .task-list th {
+    padding: 0 15px;
+}
+
+.planner .task-list {
+    margin: 25px 15px;
+}
