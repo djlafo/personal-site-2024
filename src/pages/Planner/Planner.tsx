@@ -3,8 +3,9 @@ import { useState } from "react";
 export interface Task {
     label : string;
     motivation: number;
-    necessity: number;
     UUID: number;
+    done: boolean;
+    deadline: number;
 }
 interface UsePlannerReturn {
     tasks : Array<Task>;
@@ -13,8 +14,8 @@ interface UsePlannerReturn {
     sort : () => void;
     setTasks : (ta : Array<Task>) => void;
 }
-export default function usePlanner() {
-    const [tasks, _setTasks] = useState<Array<Task>>([]);
+export default function usePlanner(setter ?: () => Array<Task>) {
+    const [tasks, _setTasks] = useState<Array<Task>>((setter && setter()) || []);
 
     const addTask = (t : Task) => {
         _setTasks(ta => {
@@ -32,10 +33,25 @@ export default function usePlanner() {
 
     const sort = () => {
         _setTasks(ta => {
-            const copy = ta.slice();
-            return copy.sort((a, b) => {
-                return b.motivation - a.motivation;
+            let copy = ta.slice();
+            copy = copy.sort((a, b) => {
+                const motDiff = b.motivation - a.motivation;
+                return motDiff;
             });
+            const done : Array<Task> = [];
+            const undone : Array<Task> = [];
+            const timed : Array<Task> = [];
+            copy.forEach(c => {
+                if(c.done) {
+                    done.push(c);
+                } else if (c.deadline) {
+                    timed.push(c);
+                } else {
+                    undone.push(c);
+                }
+            });
+            copy = [...timed, ...undone, ...done];
+            return copy;
         });
     }
 

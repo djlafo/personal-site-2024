@@ -1,22 +1,19 @@
 import { useEffect, useState } from "react";
 import { Task } from "./Planner";
 
+import { TimeInput } from '../../components';
+
+const TEXTAREA_PADDING = 5;
+
 interface TaskListProps {
     tasks : Array<Task>;
     onRemove : (t : Task) => void;
     onUpdate : (ta : Array<Task>) => void;
     children : React.ReactNode;
 }
-interface PartialTask {
-    label ?: string;
-    motivation ?: string;
-    necessity ?: string;
-}
-interface StringTask {
-    label : string;
+interface StringTask extends Omit<Task, 'motivation' | 'necessity'> {
     motivation : string;
     necessity : string;
-    UUID: number;
 }
 export default function TaskList(props : TaskListProps) {
     const [lastTasks, setLastTasks] = useState<Array<Task>>();
@@ -25,15 +22,25 @@ export default function TaskList(props : TaskListProps) {
 
     if(lastTasks !== props.tasks) {
         setLastTasks(props.tasks);
+        let counter = 1;
         setTaskCopy(props.tasks.map(t => {
+            let deadline = t.deadline;
+            if(deadline)  {
+                deadline -= Date.now();
+                deadline = Math.floor(deadline/1000);
+                if(deadline < 0) deadline = 0;
+            }
             const translated : StringTask = {
-                label: t.label,
-                motivation: t.motivation.toString(),
-                necessity: t.necessity.toString(),
-                UUID: t.UUID
+                label: t.label || '',
+                motivation: t.motivation.toString() || '0',
+                UUID: counter,
+                done: t.done || false,
+                deadline: deadline
             };
+            counter++;
             return translated;
         }));
+        setNewID(counter);
     }
 
     const addRow = () => {
@@ -41,29 +48,47 @@ export default function TaskList(props : TaskListProps) {
             UUID: newID,
             label: '',
             motivation: 0,
-            necessity: 0
+            done: false,
+            deadline: 0
         }]));
         setNewID(n => n + 1);
     }
 
-    const updateRow = (ind : number, pt : PartialTask) => {
-        setTaskCopy(tc => {
-            if(!tc) return [];
-            const tcc = tc.slice();
-            tcc.splice(ind, 1, Object.assign(tc[ind], pt));
-            return tcc;
-        });
+    const updateRow = (ind : number, pt : Partial<StringTask>, immediate=false) => {
+        if(!taskCopy) return;
+        const tcc = taskCopy.slice();
+        tcc.splice(ind, 1, Object.assign(taskCopy[ind], pt));
+        if(immediate) {
+            updateTasks(tcc);
+        } else {
+            setTaskCopy(tcc);
+        }
     }
 
-    const updateTasks = () => {
-        if(!taskCopy) return;
+    const anyChecked = () => {
+        if(!taskCopy) return false;
+        return taskCopy.some(t => t.done);
+    }
 
-        props.onUpdate(taskCopy.map(t => {
+    const checkAll = (checked : boolean) => {
+        if(!taskCopy) return;
+        const tcc = taskCopy.slice();
+        tcc.map(t => {
+            return Object.assign(t, {done: checked});
+        });
+        updateTasks(tcc);
+    }
+
+    const updateTasks = (tasks = taskCopy) => {
+        if(!tasks) return;
+
+        props.onUpdate(tasks.map(t => {
             const translated : Task = {
                 label : t.label,
                 motivation: Number(t.motivation),
-                necessity: Number(t.necessity),
-                UUID: t.UUID
+                UUID: t.UUID,
+                done: t.done,
+                deadline: t.deadline ? Date.now() + (t.deadline * 1000) : 0
             }
             return translated;
         }));
@@ -74,68 +99,61 @@ export default function TaskList(props : TaskListProps) {
         setTimeout(() => {
             document.querySelectorAll("textarea").forEach(textarea => {
                 textarea.style.height = 'auto'
-                textarea.style.height = textarea.scrollHeight + "px";
+                textarea.style.height = textarea.scrollHeight + TEXTAREA_PADDING + "px";
             });
         }, 50);
     }, [taskCopy]);
 
     return <div className='task-list'>
         <div className='buttons'>
+            {(taskCopy && taskCopy.length && <>
+                <span>
+                    <input id='allCheck' 
+                        type='checkbox'
+                        checked={anyChecked()}
+                        onChange={e => checkAll(e.target.checked)}/>
+                    <label htmlFor='allCheck'>All</label>
+                </span>
+            </>) || <></>}
             {props.children}
         </div>
-        {(props.tasks.length && 
-            <table>
-                <thead>
-                    <tr>
-                        <th>
-                            Label
-                        </th>
-                        <th>
-                            Motivation
-                        </th>
-                        <th>
-                            Necessity
-                        </th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {taskCopy && taskCopy.map((t, i)=> {
-                        return <tr key={t.UUID}>
-                            <td>
-                                <textarea rows={1}
-                                    autoFocus={i === taskCopy.length - 1}
-                                    value={t.label} 
-                                    onChange={e => {
-                                        updateRow(i, {label: e.target.value});
-                                        e.target.style.height = 'auto';
-                                        e.target.style.height = `${e.target.scrollHeight}px`;
-                                    }}
-                                    onBlur={() => updateTasks()}/>
-                            </td>
-                            <td>
+        {(taskCopy && taskCopy.length && 
+            <div className='task'>
+                {taskCopy.map((t, i)=> {
+                    return <div key={t.UUID} className={`task-cell ${t.done ? 'done' : ''}`}>        
+                        <textarea rows={1}
+                            autoFocus={i === taskCopy.length - 1}
+                            value={t.label} 
+                            onChange={e => {
+                                updateRow(i, {label: e.target.value});
+                                e.target.style.height = 'auto';
+                                e.target.style.height = `${e.target.scrollHeight + TEXTAREA_PADDING}px`;
+                            }}
+                            onBlur={() => updateTasks()}/>
+                        <div className='task-details'>
+                            <div>
                                 <input type='number' 
                                     min='0'
                                     max='100'
                                     value={t.motivation} 
                                     onChange={e => updateRow(i, {motivation: e.target.value})}
-                                    onBlur={() => updateTasks(i)}/>
-                            </td>
-                            <td>
-                                <input type='number' 
-                                    min='0'
-                                    max='100'
-                                    value={t.necessity} 
-                                    onChange={e => updateRow(i, {necessity: e.target.value})}
-                                    onBlur={() => updateTasks(i)}/>
-                            </td>
-                            <td>
-                                <input type='button' value='X' onClick={() => props.onRemove(props.tasks[i])}/>
-                            </td>
-                        </tr>;
-                    })}
-                </tbody>
-            </table>)
+                                    onBlur={() => updateTasks()}/>
+                                <br/>
+                                <TimeInput value={t.deadline} 
+                                    onValueChange={n => updateRow(i, {deadline: n}, true)}/>
+                            </div>
+                            <div>
+                                <input type='checkbox'
+                                    checked={t.done}
+                                    onChange={e => {
+                                        updateRow(i, {done: !t.done}, true);
+                                    }}/>
+                                <input type='button' value='x' onClick={() => props.onRemove(props.tasks[i])}/>
+                            </div>
+                        </div>
+                    </div>;
+                })}
+            </div>)
             || 
             <></>
         }

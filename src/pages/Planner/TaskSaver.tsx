@@ -4,6 +4,15 @@ interface TaskSaverProps {
     tasks : Array<Task>;
     onLoad : (t : Array<Task>) => void;
 }
+
+export const load = () => {
+    const storage = localStorage.getItem('tasks');
+    if(!storage) return;
+    try {
+        return JSON.parse(storage);
+    } catch {}
+}
+
 export default function TaskSaver(props : TaskSaverProps) {
     const checkClipboard = () => {
         if(!navigator.clipboard) {
@@ -37,10 +46,10 @@ export default function TaskSaver(props : TaskSaverProps) {
         localStorage.setItem('tasks', JSON.stringify(props.tasks));
     };
 
-    const load = () => {
-        const storage = localStorage.getItem('tasks');
-        if(storage) {
-            props.onLoad(JSON.parse(storage));
+    const _load = () => {
+        const loaded = load();
+        if(loaded) {
+            props.onLoad(loaded);
         } else {
             alert('Nothing saved');
         }
@@ -49,16 +58,27 @@ export default function TaskSaver(props : TaskSaverProps) {
     return <>
         {
             (props.tasks.length !== 0 && <>
-                <input type='button' value='Clear' onClick={() => props.onLoad([])}/>
-                <input type='button' value='Save to browser' onClick={() => save()}/>
+                <span>
+                    <input type='button' value='Refresh' onClick={() => props.onLoad(props.tasks.slice())}/>
+                    <input type='button' value='Clear' onClick={() => props.onLoad([])}/>
+                </span>
             </>) || <></>
         }
-        <input type='button' value='Load' onClick={() => load()}/>
-        {   
-            (props.tasks.length !== 0 && <>
-                <input type='button' value='Copy' onClick={() => copy()}/>
-            </>) || <></>
-        }
-        <input type='button' value='Paste' onClick={() => paste()}/>
+        <span>
+            {
+                (props.tasks.length !== 0 && <>
+                        <input type='button' value='Save to browser' onClick={() => save()}/>
+                </>) || <></>
+            }
+            <input type='button' value='Load' onClick={() => _load()}/>
+        </span>
+        <span>
+            {   
+                (props.tasks.length !== 0 && <>
+                    <input type='button' value='Copy' onClick={() => copy()}/>
+                </>) || <></>
+            }
+            <input type='button' value='Paste' onClick={() => paste()}/>
+        </span>
     </>
 }

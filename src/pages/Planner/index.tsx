@@ -2,12 +2,13 @@ import { Page } from '../../components';
 
 import usePlanner from './Planner';
 import TaskList from './TaskList';
-import TaskSaver from './TaskSaver';
+import TaskSaver, { load } from './TaskSaver';
 
 import './planner.css';
 
+
 export default function Planner() {
-    const {tasks, removeTask, sort, setTasks} = usePlanner();
+    const {tasks, removeTask, sort, setTasks} = usePlanner(load);
 
     return <Page>
         <div className='planner'>
